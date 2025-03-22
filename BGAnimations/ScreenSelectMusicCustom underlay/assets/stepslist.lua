@@ -290,15 +290,12 @@ local hs_p = Def.ActorFrame{
     },
 };
 
+local bIsItOnlineNow = false
+
 -- machine
 local hs_m = Def.ActorFrame{
+    Name="Machine",
     InitCommand=cmd(x,_screen.cx + 12;y,score_pos+22);
-    StateChangedMessageCommand=function(self)
-        self:stoptweening();
-        self:decelerate(Global.state == "SelectSteps" and 0.3 or 0.15);
-        self:x(Global.state == "SelectSteps" and _screen.cx or _screen.cx + 12);
-        self:diffusealpha(Global.state == "SelectSteps" and 1 or 0);
-    end;
 
     LoadActor(THEME:GetPathG("","litepane"))..{
         InitCommand=cmd(zoomto,score_width,score_height*self:GetHeight();animate,false;setstate,1)
@@ -316,6 +313,31 @@ local hs_m = Def.ActorFrame{
     Def.BitmapText{
         Font = Fonts.radar["Label"];
         Text = string.upper("Machine Best");
+        InitCommand=cmd(zoomx,0.31;zoomy,0.3;diffuse,HighlightColor();strokecolor,BoostColor(HighlightColor(),0.3);y,18);
+    },
+};
+
+-- online
+local hs_o = Def.ActorFrame{
+    Name="Online",
+    InitCommand=cmd(x,_screen.cx + 12;y,score_pos+22);
+
+    LoadActor(THEME:GetPathG("","litepane"))..{
+        InitCommand=cmd(zoomto,score_width,score_height*self:GetHeight();animate,false;setstate,1)
+    },
+    LoadActor(THEME:GetPathG("","litepane"))..{
+        InitCommand=cmd(zoom,score_height;x,-score_width/2;horizalign,right;animate,false;setstate,0);
+    },   
+    LoadActor(THEME:GetPathG("","litepane"))..{
+        InitCommand=cmd(zoom,score_height;x,score_width/2;horizalign,left;animate,false;setstate,2);
+    },
+    LoadActor(THEME:GetPathG("","separator"))..{
+        InitCommand=cmd(zoom,0.3;diffuse,0.1,0.1,0.1,1);
+        OnCommand=cmd(visible,GAMESTATE:GetNumSidesJoined() > 1);
+    },
+    Def.BitmapText{
+        Font = Fonts.radar["Label"];
+        Text = string.upper("Online Best");
         InitCommand=cmd(zoomx,0.31;zoomy,0.3;diffuse,HighlightColor();strokecolor,BoostColor(HighlightColor(),0.3);y,18);
     },
 };
@@ -430,6 +452,114 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
         end;
     };
 
+    hs_o[#hs_o+1] = Def.ActorFrame{
+        UpdateScoresMessageCommand=function(self)
+            self:stoptweening()
+            if NETMAN and NETMAN:IsConnectionEstablished() then
+                self:sleep(.5):queuecommand("RequestScoreNow")
+            end
+        end,
+        RequestScoreNowCommand=function(self)
+            if NETMAN and NETMAN:IsConnectionEstablished() then
+                NETMAN:FuncHighScoresForChart{
+                    ChartKey = Global.pncursteps[pn]:GetChartKey(),
+                    Timing = "Original",
+                    Rate = GAMESTATE:GetSongOptionsObject("ModsLevel_Preferred"):MusicRate(),
+                    PlayerNumber = pn,
+                    OnResponse = function (data)
+                        -- local scoredata = data.response.scores
+
+                        if not data.response.scores or #data.response.scores == 0 then
+                            Global.onlinescore[pn] = nil
+                            MESSAGEMAN:Broadcast("OnlineScoreUpdated")
+                            return
+                        end
+
+                        Global.onlinescore[pn] = data.response.scores
+
+                        --if not scoredata then return end
+                        --lua.ReportScriptError("We got dataaa")
+                        --self:playcommand("UpdateScores")
+
+                        MESSAGEMAN:Broadcast("OnlineScoreUpdated")
+
+                        --if not scoredata[1] then return end
+                        --self:GetChild("Name"):settext( scoredata[1].username )
+                        --self:GetChild("Score"):settext( FormatPercentScore(scoredata[1].score) )
+                    end,
+                    OnFail = function ()
+                        lua.ReportScriptError"woah af alil"
+                    end
+                }
+            end
+        end,
+        Def.BitmapText{
+            Name = "Name",
+            Font = Fonts.stepslist["Label"];
+            InitCommand=function(self) self:x( -50 ):halign(0) end,
+            OnCommand=cmd(zoomx,score_size;zoomy,score_size);
+            OnlineScoreUpdatedMessageCommand=function(self)
+                --self:settext(ToUpper("<No Name>"))
+                self:diffuse(0.9,0.9,0.9,.3);
+                self:strokecolor(0.1,0.1,0.1,1);
+                --[[
+                local song = Global.song or GAMESTATE:GetCurrentSong();
+                local steps = Global.pncursteps[pn] or GAMESTATE:GetCurrentSteps(pn);
+                local hs = GetTopScoreForProfile(song,steps,PROFILEMAN:GetMachineProfile());
+    
+                self:stoptweening();
+                self:diffuse(0.6,0.6,0.6,1);
+                --self:diffusetopedge(0.85,0.85,0.85,1);
+                self:strokecolor(0.1,0.1,0.1,1);
+    
+                ]]
+                if Global.onlinescore[pn] then 
+                    self:settext( Global.onlinescore[pn][1].username ) 
+                    self:diffusealpha(1);
+                else 
+                    self:settext("<No Name>");
+                    self:diffusealpha(0.3);
+                end
+            end;
+        };
+        
+        Def.BitmapText{
+            Name = "Score",
+            Font = Fonts.stepslist["Percentage"];
+            InitCommand=function(self) self:x( 50 ):halign(1) end,
+            OnCommand=cmd(zoomx,score_size;zoomy,score_size);
+            OnlineScoreUpdatedMessageCommand=function(self)
+                self:diffuse(0.9,0.9,0.9,1);
+                self:strokecolor(0.1,0.1,0.1,1);
+                --[[
+                local song = Global.song or GAMESTATE:GetCurrentSong();
+                local steps = Global.pncursteps[pn] or GAMESTATE:GetCurrentSteps(pn);
+                local hs = GetTopScoreForProfile(song,steps,PROFILEMAN:GetMachineProfile());
+    
+                self:stoptweening();
+                self:diffuse(0.6,0.6,0.6,1);
+                --self:diffusetopedge(0.85,0.85,0.85,1);
+                self:strokecolor(0.1,0.1,0.1,1);
+    
+                if hs then 
+                    self:settext(FormatDP(hs:GetPercentDP())) 
+                    self:diffusealpha(1);
+                else 
+                    self:settext("0%");
+                    self:diffusealpha(0.3);
+                end
+                ]]
+                if Global.onlinescore[pn] then 
+                    self:settext( FormatPercentScore(Global.onlinescore[pn][1].score) ) 
+                    self:diffusealpha(1);
+                else 
+                    self:settext("0%");
+                    self:diffusealpha(0.3);
+                end
+            end;
+        };
+    }
+
 
     end;
 end;
@@ -437,7 +567,49 @@ end;
 
 
 t[#t+1] = hs_p;
-t[#t+1] = hs_m;
+
+local mp = Def.ActorFrame{
+    StateChangedMessageCommand=function(self)
+        self:stoptweening();
+
+        local bothplayersenabled = GAMESTATE:IsPlayerEnabled(PLAYER_1) and GAMESTATE:IsPlayerEnabled(PLAYER_2)
+
+        for actor in ivalues({"Online","Machine"}) do
+            if self:GetChild(actor) then
+                self:GetChild(actor):stoptweening():decelerate(Global.state == "SelectSteps" and 0.3 or 0.15)
+                :x(Global.state == "SelectSteps" and _screen.cx or _screen.cx + 12)
+                :diffusealpha(Global.state == "SelectSteps" and 1 or 0)
+                if actor == "Online" then
+                    self:GetChild(actor):diffusealpha(0)
+                end
+            end
+        end
+
+        if Global.state == "SelectSteps" and not bothplayersenabled then
+            self:queuecommand("Cycle")
+        else
+            bIsItOnlineNow = false
+        end
+    end;
+    CycleCommand=function(self)
+        if not NETMAN then return end
+        if not NETMAN:IsConnectionEstablished() then return end
+        bIsItOnlineNow = not bIsItOnlineNow
+
+        -- Fade between this pane and the machine pane.
+        self:GetChild("Online"):sleep(1.5):decelerate(0.3):diffusealpha( bIsItOnlineNow and 1 or 0 )
+        self:GetChild("Machine"):sleep(1.5):decelerate(0.3):diffusealpha( bIsItOnlineNow and 0 or 1 )
+        
+        self:sleep(1.5):queuecommand("Cycle")
+    end,
+}
+mp[#mp+1] = hs_m;
+
+if NETMAN and NETMAN:IsConnectionEstablished() then
+    mp[#mp+1] = hs_o;
+end
+
+t[#t+1] = mp
 
 --//==========================================
 --//  CURSOR

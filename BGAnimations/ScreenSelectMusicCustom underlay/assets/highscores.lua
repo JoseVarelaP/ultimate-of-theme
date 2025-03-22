@@ -252,6 +252,87 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
         },
     };
 
+	if NETMAN and NETMAN:IsConnectionEstablished() and not (GAMESTATE:IsPlayerEnabled(PLAYER_1) and GAMESTATE:IsPlayerEnabled(PLAYER_2)) then
+		local numEntries = 10
+		local ofleadeboard = Def.ActorFrame{}
+		local otherpn = OtherPlayer[pn]
+
+		for i = 1,numEntries do
+			ofleadeboard[#ofleadeboard+1] = Def.ActorFrame{
+				InitCommand=function(self)
+					self:y( 14 * (i-1) )
+				end,
+				OnlineScoreUpdatedMessageCommand=function(self)
+					self:diffuse(Color.White)
+
+					if Global.onlinescore[pn] and Global.onlinescore[pn][i] then
+						self:GetChild("User"):settext( Global.onlinescore[pn][i].username )
+						self:GetChild("Score"):settext( FormatPercentScore(Global.onlinescore[pn][i].score) )
+					else
+						self:GetChild("User"):settext( "-----" )
+						self:GetChild("Score"):settext( "--.--%" )
+						self:diffusealpha(0.3)
+					end
+				end,
+				Def.BitmapText{
+					Font = "regen strong";
+					Text = i;
+					InitCommand=cmd(x,-80+(30*pnSide(pn));zoomy,0.31;zoomx,0.3075;halign,1;strokecolor,BoostColor(PlayerColor(pn,0.9),1/3);diffusealpha,1);
+				},
+
+				Def.BitmapText{
+					Name = "User",
+					Font = Fonts.stepslist["Label"];
+					Text = "-----";
+					InitCommand=cmd(x,-70+(30*pnSide(pn));zoomy,0.31;zoomx,0.3075;halign,0;strokecolor,BoostColor(PlayerColor(pn,0.9),1/3);diffusealpha,1);
+				},
+
+				Def.BitmapText{
+					Name = "Score",
+					Font = "regen strong";
+					Text = "--.--%",
+					InitCommand=cmd(x,70+(30*pnSide(pn));zoomy,0.31;zoomx,0.3075;halign,1;strokecolor,BoostColor(PlayerColor(pn,0.9),1/3);diffusealpha,1);
+				},
+			}
+		end
+
+		t[#t+1] = Def.ActorFrame{
+			InitCommand=cmd(diffusealpha,0);
+			StateChangedMessageCommand=function(self) self:stoptweening():decelerate(0.3):diffusealpha(Global.state == "HighScores" and 1 or 0); end;
+
+			Def.Quad{
+				InitCommand=cmd(CenterX;y,SCREEN_CENTER_Y-148;zoomto,_screen.w * 0.5 * pnSide(otherpn),1;horizalign,left;fadeleft,0.75;cropleft,0.15;diffuse,PlayerColor(pn));
+			},
+
+			-- TEXT
+			Def.ActorFrame{
+				InitCommand=cmd(x,SCREEN_CENTER_X + (pnSide(otherpn)*(spacing+32));y,SCREEN_CENTER_Y-148);
+				StateChangedMessageCommand=function(self) 
+					self:stoptweening();
+					self:decelerate(0.4);
+					local offset = Global.state == "HighScores" and -8 or 8;
+					self:x(SCREEN_CENTER_X + (pnSide(otherpn)*(spacing + offset))); 
+				end;
+
+				-- title
+				Def.BitmapText{
+					Font = "regen strong";
+					Text = string.upper( THEME:GetString("Labels","OutFoxLeaderboard") );
+					InitCommand=cmd(x,-48*pnSide(pn);zoomy,0.31;zoomx,0.3075;horizalign,pnAlign(OtherPlayer[pn]);strokecolor,BoostColor(PlayerColor(pn,0.9),1/3);diffusealpha,0);
+					StateChangedMessageCommand=function(self)
+						self:stoptweening();
+						self:decelerate(Global.state == "HighScores" and 0.2 or 0.3);
+						self:diffusealpha(Global.state == "HighScores" and 0.75 or 0);
+					end;
+				},
+			},
+
+			ofleadeboard..{
+				InitCommand=cmd(x,SCREEN_CENTER_X + (pnSide(otherpn)*(spacing+32));y,SCREEN_CENTER_Y-130);
+			}
+		};
+	end
+
 end;
 
 -- QUADS BG

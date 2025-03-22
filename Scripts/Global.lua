@@ -59,6 +59,11 @@ Global = {
     bgcolor = {0.66,0.68,0.7,1},
     lockinput = false,
     disqualify = false,
+    onlinescore = {
+        [PLAYER_1] = nil,
+        [PLAYER_2] = nil,
+    },
+
 };
 
 function ResetState()

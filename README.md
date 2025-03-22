@@ -7,7 +7,7 @@ A simplified theme for Stepmania 5.0.12 and 5.1.x, updated for OutFox play.
 
 It was mostly curiosity. I was around at the time when 5.1-3 happened, and caused so much confusion around people as typical workflows for themes were seemengly replaced overnight, and had to try to figure out how to work with it. Only about 3 themes (I could be wrong) were made for that version, ultimate, while not starting as a 5.1-3 theme, would later be updated to only support that version.
 
-So, this repo provides an updated version that works with OutFox builds, a42 at a minimum, while retaining most of the original code.
+So, this repo provides an updated version that works with OutFox builds, a43 at a minimum, while retaining most of the original code.
 
 ## Would additions be made?
 

@@ -48,6 +48,7 @@ end;
 
 function SetGroups()
     Global.allgroups = SONGMAN:GetSongGroupNames();
+    table.sort( Global.allgroups ) -- Sort them alphabetically.
     Global.allgroups = FilterGroups(Global.allgroups);
 
     local pref = GAMESTATE:GetPreferredSong()
@@ -149,8 +150,26 @@ end;
 function SetWheelSteps()
     Global.steps = FilterSteps(Global.song);
     for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
-        Global.pnsteps[pn] = 1;
-        Global.pncursteps[pn] = Global.steps[1];
+        -- Keep track of the player's current difficulty and steps type.
+        local curStepDiff = Global.pncursteps[pn]:GetDifficulty()
+        local curStepType = Global.pncursteps[pn]:GetStepsType()
+
+        -- Now, look through the available songs in the current list, to see if there's a
+        -- difficulty that matches our description.
+        local newSteps = -1
+        for index,check in ipairs(Global.steps) do
+            if check:GetDifficulty() == curStepDiff and curStepType == check:GetStepsType() then
+                newSteps = index
+            end
+        end
+
+        if newSteps ~= -1 then
+            Global.pnsteps[pn] = newSteps;
+            Global.pncursteps[pn] = Global.steps[newSteps];
+        else
+            Global.pnsteps[pn] = 1;
+            Global.pncursteps[pn] = Global.steps[1];
+        end
     end;
 end;
 

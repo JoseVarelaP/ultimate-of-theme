@@ -101,6 +101,9 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
 
         InitCommand=function(self)
             self:xy(SCREEN_CENTER_X,40)
+            if GAMESTATE:IsPlayerEnabled(PLAYER_1) and GAMESTATE:IsPlayerEnabled(PLAYER_2) then
+                self:x( SCREEN_CENTER_X + 150 * pnSide(pn) )
+            end
         end,
 
         OnCommand=function(self)
@@ -124,6 +127,10 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
             if GAMESTATE:IsSideJoined(pn) and Global.pncursteps[pn] then
                 if Global.state ~= "SelectSteps" then
                     self:visible(Global.oplist[pn]);
+                    if Global.oplist[pn] then
+                        local steps = Global.pncursteps[pn];
+                        self:ChangeReload(steps);
+                    end
                 else
                     self:visible(true);
                 end;

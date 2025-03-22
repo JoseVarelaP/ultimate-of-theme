@@ -121,10 +121,10 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
 						maker = FilterStepmaker(maker);
 						
 						if tostring(maker)=="" then
-							self:settext("<Unknown Step Author>");
+							self:settext(THEME:GetString("Labels","UnknownStepAuthor"));
 							self:diffuse(0.7,0.7,0.7,0.8);
 						else
-							self:settext("Steps by "..maker);
+							self:settext( string.format(THEME:GetString("Labels","StepsBy"), maker) );
 							self:diffuse(1,1,1,1);
 						end
 					end;
