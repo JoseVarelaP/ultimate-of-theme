@@ -136,7 +136,7 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                 end;
 
                 local prefs = notefield_prefs_config:get_data(pn);
-                if not Global.oplist[pn] then
+                if Global.state == "SelectSteps" and not Global.oplist[pn] then
                     local steps = Global.pncursteps[pn];
                     -- local skin = GetPreferredNoteskin(pn);
 
