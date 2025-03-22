@@ -58,6 +58,10 @@ function SetGroupSelection()
 	local selection = 1
 	local song = Global.song or GAMESTATE:GetCurrentSong();
 	local name = song:GetGroupName();
+
+	if name == "" then
+		return 1
+	end
 	
 	for i=1,#Global.allgroups do
 		if name == Global.allgroups[i]["Name"] then return i; end;
@@ -212,7 +216,9 @@ for i=1,maxitems do
 			OnCommand=cmd(playcommand,"ReloadGroups");
 			ReloadGroupsMessageCommand=function(self)
 				local index = ItemIndex(Global.selection, i, #Global.allgroups);
-				self:settext(Global.allgroups[index]["Name"]); 
+				if Global.allgroups[index].Name then
+					self:settext(Global.allgroups[index]["Name"]); 
+				end
 			end;
 		};
 		
@@ -223,13 +229,14 @@ for i=1,maxitems do
 			OnCommand=cmd(playcommand,"ReloadGroups");
 			ReloadGroupsMessageCommand=function(self,param)
 				local index = ItemIndex(Global.selection, i, #Global.allgroups);
-				local numsongs = Global.allgroups[index]["Count"];
-				if numsongs == 1 then 
-					self:settext(numsongs.." song"); 
-				else 
-					self:settext(numsongs.." songs"); 
-				end;
-
+				if Global.allgroups[index]["Count"] then
+					local numsongs = Global.allgroups[index]["Count"];
+					if numsongs == 1 then 
+						self:settext(numsongs.." song"); 
+					else 
+						self:settext(numsongs.." songs"); 
+					end;
+				end
 
 			end;
 		};

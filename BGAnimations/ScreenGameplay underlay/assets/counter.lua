@@ -51,7 +51,7 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
 
             p[#p+1] = Def.ActorFrame{
                 InitCommand=cmd(vertalign,bottom;horizalign,pnAlign(pn);y,((#labels-i+2)*-spacing);x,20 * -pnSide(pn));
-                UpdateMessageCommand=function(self)
+                JudgmentMessageCommand=function(self)
                     local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn);
                     local value;
                     if string.find(labels[i].Key,"HoldNoteScore_") then 
@@ -125,7 +125,7 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
         --grade
         p[#p+1] = Def.ActorFrame{
             InitCommand=cmd(vertalign,bottom;horizalign,pnAlign(pn);y,(1*-spacing)+2;x,(spacing+4) * -pnSide(pn));
-            UpdateMessageCommand=function(self)
+            JudgmentMessageCommand=function(self)
                 local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn);
                 local grade;
 

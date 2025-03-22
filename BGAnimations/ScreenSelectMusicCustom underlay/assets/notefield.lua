@@ -8,7 +8,7 @@ local curskin = {
 
 local function UpdateTime(self, delta)
     curTime = GAMESTATE:GetCurMusicSeconds();
-    MESSAGEMAN:Broadcast("UpdateNotefield");
+    -- MESSAGEMAN:Broadcast("UpdateNotefield");
 end
 
 local function CanShowNotefield()
@@ -16,8 +16,36 @@ local function CanShowNotefield()
     return false;
 end;
 
+------
+-- Helper functions to obtain Scroll speed informtion
+local ObtainSpeedType = function( pOptions )
+    local sptype = 1
+    if pOptions:XMod() then sptype = 1 end
+    if pOptions:CMod() then sptype = 2 end
+    if pOptions:MMod() then sptype = 3 end
+    if pOptions:AMod() then sptype = 4 end
+    if pOptions:CAMod() then sptype = 5 end
+
+    return sptype
+end
+local GetSpeed = function( pOptions, CurType )
+    if not CurType then return 0 end
+
+    if CurType == 1 then return pOptions:XMod()*100 end
+    if CurType == 2 then return pOptions:CMod() end
+    if CurType == 3 then return pOptions:MMod() end
+    if CurType == 4 then return pOptions:AMod() end
+    if CurType == 5 then return pOptions:CAMod() end
+
+    return 0
+end
+------
+
 local t = Def.ActorFrame{
-    InitCommand=function(self) self:SetUpdateFunction(UpdateTime); self:diffusealpha(0); end;
+    InitCommand=function(self)
+        --[[self:SetUpdateFunction(UpdateTime);]]
+        self:diffusealpha(0);
+    end;
     StateChangedMessageCommand=cmd(playcommand,"Refresh");
     OptionsListOpenedMessageCommand=cmd(playcommand,"Refresh");
     OptionsListClosedMessageCommand=cmd(playcommand,"Refresh");
@@ -46,7 +74,40 @@ local tex = Def.ActorFrameTexture{
 -- touchy in the notefield_targets branch, but good luck finding someone to build that.
 for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
 
+    local PlayerToPreview = ( GAMESTATE:IsPlayerEnabled(pn) and pn or GAMESTATE:GetMasterPlayerNumber() )
+    -- Load preview notefield
+    local isDouble = GAMESTATE:GetCurrentStyle():GetStyleType() == "StyleType_OnePlayerTwoSides"
+    local def_ds  = THEME:GetMetric("Player","DrawDistanceBeforeTargetsPixels")
+    local def_dsb = THEME:GetMetric("Player","DrawDistanceAfterTargetsPixels")
+    local receptposnorm = THEME:GetMetric("Player","ReceptorArrowsYStandard")
+    local receptposreve = THEME:GetMetric("Player","ReceptorArrowsYReverse")
+    local yoffset = receptposreve-receptposnorm
+    local notefieldmid = (receptposnorm + receptposreve)/2
+    local PlayerOptions = GAMESTATE:GetPlayerState(pn):GetPlayerOptions("ModsLevel_Preferred")
+    local height_ratio = SCREEN_HEIGHT/480
+
+    local notefieldWidth = GAMESTATE:GetStyleFieldSize(pn)
+
     tex[#tex+1] = Def.NoteField{
+        Player= tonumber( string.sub(PlayerToPreview,-1) )-1,
+        AutoPlay = true,
+        Chart = "Invalid",
+        NoteSkin= PlayerOptions:NoteSkin(),--With this, I can make extra notefields take on the appearance of P1/P2. -Kid
+        DrawDistanceAfterTargetsPixels= def_dsb,
+        SendMessageOnStep = true,
+        DrawDistanceBeforeTargetsPixels= def_ds,
+        YReverseOffsetPixels= yoffset,--REVERSE minus STANDARD
+        FieldID= 0,
+
+        InitCommand=function(self)
+            self:xy(SCREEN_CENTER_X,40)
+        end,
+
+        OnCommand=function(self)
+            local tempstate = GAMESTATE:GetPlayerState(pn)
+            local modstring = tempstate:GetPlayerOptionsString("ModsLevel_Preferred")
+            self:ModsFromString( modstring )
+        end,
 
         StepsChangedMessageCommand=cmd(playcommand,"Refresh");
         SpeedChangedMessageCommand=cmd(playcommand,"Refresh");
@@ -55,7 +116,7 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
         OptionsListChangedMessageCommand=cmd(playcommand,"Refresh");
         NoteskinChangedMessageCommand=function(self,param)
             if param and param.noteskin and param.Player == pn then
-                self:set_skin(param.noteskin, {});
+                self:ChangeReload( GAMESTATE:GetCurrentSteps( pn ), param.noteskin )
             end;
         end;
 
@@ -67,25 +128,33 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                     self:visible(true);
                 end;
 
+                if Global.state ~= "SelectSteps" then
+                    return
+                end
+
                 local steps = Global.pncursteps[pn];
                 local skin = GetPreferredNoteskin(pn);
                 local prefs = notefield_prefs_config:get_data(pn);
 
-                self:set_vanish_type("FieldVanishType_RelativeToSelf")
+                --self:set_vanish_type("FieldVanishType_RelativeToSelf")
 
                 if curskin[pn] ~= skin then
-                    self:set_skin(skin, {});
+                    --self:set_skin(skin, {});
                     curskin[pn] = skin;
                 end;
 
-                self:set_steps(steps);
+                self:ChangeReload(steps, skin);
 
                 local speed = prefs.speed_mod;
                 local mode = prefs.speed_type;
                 local bpm = Global.song:GetDisplayBpms()[2];
                 apply_notefield_prefs_nopn(bpm, self, prefs)
                 self:playcommand("WidthSet");
-                self:set_curr_second(curTime);  
+                --self:set_curr_second(curTime);
+
+                local tempstate = GAMESTATE:GetPlayerState(pn)
+                local modstring = tempstate:GetPlayerOptionsString("ModsLevel_Preferred")
+                self:ModsFromString( modstring )
             end;
         end;
 
@@ -94,6 +163,7 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                 local steps = Global.pncursteps[pn];
                 local st = PureType(steps);
 
+                --[[
                 if (st == "Double" or st == "Routine") or GAMESTATE:GetNumSidesJoined() == 1 then
                     self:set_base_values{
                         transform_pos_x = _screen.cx, 
@@ -105,14 +175,34 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                         transform_pos_y = _screen.cy,
                     }
                 end;
+                ]]
             end;
         end;
 
         UpdateNotefieldMessageCommand=function(self)
+            --[[
             if GAMESTATE:IsSideJoined(pn) and Global.pncursteps[pn] then
                 self:set_curr_second(curTime);
             end;
+            ]]
+
+            -- Get the options we receieved from the optionslist, and parse them here.
+            --SCREENMAN:SystemMessage(NOTESCONFIG:get_data(pn).speed_mod)
         end;
+        OptionsListChangedMessageCommand=function(self, params)
+            -- { Player = pn, Input = param.Input, Option = currentoption[pn] }
+            local playeroptions = GAMESTATE:GetPlayerState(pn):GetPlayerOptions("ModsLevel_Preferred")
+            
+            local style = NOTESCONFIG:get_data(pn).speed_type
+            local speed = NOTESCONFIG:get_data(pn).speed_mod
+            
+            SCREENMAN:SystemMessage(style .. " - " .. speed)
+            if style == "multiple" then
+                playeroptions:XMod(speed/100)
+            end
+
+            self:ModsFromString( playeroptions:GetString() )
+        end
     };
 
 end;

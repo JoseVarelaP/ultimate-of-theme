@@ -204,7 +204,7 @@ end;
 --//================================================================
 
 function SortCharts(a,b)
-    local bST = StepsType:Compare(a:GetStepsType(),b:GetStepsType()) < 0
+    local bST = a:GetStepsType() < b:GetStepsType()
     if a:GetStepsType() == b:GetStepsType() then
         return a:GetMeter() < b:GetMeter()
     else
@@ -330,7 +330,7 @@ end;
 function GetNoteskins()
     local g = GAMESTATE:GetCurrentGame();
     local st = GAMEMAN:GetFirstStepsTypeForGame(g);
-    return NOTESKIN:get_skin_names_for_stepstype(st);
+    return NOTESKIN:GetNoteSkinNames();
 end;
 
 --//================================================================
@@ -340,7 +340,8 @@ function SetNoteskinByIndex(pn, num)
     local st = GAMEMAN:GetFirstStepsTypeForGame(g);
     local noteskins = GetNoteskins();
     local index = clamp(num,1,#noteskins)
-    PROFILEMAN:GetProfile(pn):set_preferred_noteskin(noteskins[index])
+    --PROFILEMAN:GetProfile(pn):set_preferred_noteskin(noteskins[index])
+    GAMESTATE:GetPlayerState(pn):GetPlayerOptions("ModsLevel_Preferred"):NoteSkin(noteskins[index])
     return noteskins[index];
 end;
 
@@ -355,7 +356,8 @@ function SetNoteskin(pn, ns)
     else
         st = GAMEMAN:GetFirstStepsTypeForGame(g)
     end;
-    PROFILEMAN:GetProfile(pn):set_preferred_noteskin(ns)
+    GAMESTATE:GetPlayerState(pn):GetPlayerOptions("ModsLevel_Preferred"):NoteSkin(ns)
+    --PROFILEMAN:GetProfile(pn):set_preferred_noteskin(ns)
 end;
 
 --//================================================================
@@ -385,6 +387,6 @@ function GetPreferredNoteskin(pn)
     else
         st = GAMEMAN:GetFirstStepsTypeForGame(g)
     end;
-    return PROFILEMAN:GetProfile(pn):get_preferred_noteskin(st)
+    return GAMESTATE:GetPlayerState(pn):GetPlayerOptions("ModsLevel_Preferred"):NoteSkin()
 end;
 

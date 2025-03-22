@@ -16,8 +16,9 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                 local conf = PLAYERCONFIG:get_data(pn);
                 notefield[pn] = player:GetChild("NoteField");
 
+                local FieldSize = GAMESTATE:GetStyleFieldSize(pn)
                 self:x(player:GetX());
-                self:zoomto(notefield[pn]:get_width()+48,_screen.h);
+                self:zoomto(FieldSize+20,_screen.h);
                 self:diffuse(0.05,0.05,0.05,conf.ScreenFilter/100);
 
             end;

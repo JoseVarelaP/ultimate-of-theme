@@ -94,7 +94,7 @@ function ReadyDecision(param)
 
 
     ApplyThemeSettings();
-    reset_needs_defective_field_for_all_players()
+    --reset_needs_defective_field_for_all_players()
     SCREENMAN:SetNewScreen("ScreenStageInformation");
 
 end;

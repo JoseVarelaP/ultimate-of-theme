@@ -120,6 +120,10 @@ function FormatSpeed(value, stype)
         return "M"..value;
     elseif mode == 2 or mode == "c" or mode == "constant" then
         return "C"..value;
+    elseif mode == 4 or mode == "a" or mode == "average" then
+        return "A"..value;
+    elseif mode == 5 or mode == "ca" or mode == "constantaverage" then
+        return "CA"..value;
     elseif mode == 1 or mode == "x" or mode == "multiple" then
         return string.format("%.2f",value/100).."X";
     else
@@ -197,6 +201,8 @@ function FormatSpeedType(t)
     if t == "maximum" then return "Automatic";
     elseif t == "constant" then return "Constant"
     elseif t == "multiple" then return "Multiple"
+    elseif t == "average" then return "Average"
+    elseif t == "constantaverage" then return "Const. Average"
     else return "" end;
 end;
 

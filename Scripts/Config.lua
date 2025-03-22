@@ -1,5 +1,58 @@
 --//================================================================
 
+create_lua_config = setmetatable({
+    get_data = function(this, playerSlot)
+        if playerSlot == "ProfileSlot_Invalid" or not playerSlot then
+            -- It's machine profile configs.
+            return this.dataCont["ProfileSlot_Machine"]
+        end
+        return this.dataCont[playerSlot]
+    end,
+    --[[
+        Load the configuration from the specific player slot.
+    ]]
+    load = function(this, playerSlot)
+        if playerSlot == "ProfileSlot_Invalid" then
+            -- It's machine profile configs.
+            return this.dataCont["ProfileSlot_Machine"]
+        end
+        return this.dataCont[playerSlot]
+    end,
+    save = function(this, playerSlot)
+        return this
+    end,
+    set_dirty = function(this, state)
+        this.dirty = state
+        return this
+    end,
+    ------
+    dataCont = {
+        ["PlayerNumber_P1"] = {},
+        ["PlayerNumber_P2"] = {},
+        ["ProfileSlot_Machine"] = {}
+    },
+    name = "",
+    dirty = false
+},{
+    __call = function(self, data)
+        if data.name then self.name = data.name end
+        if data.file then self.file = data.file end
+        if data.default then
+            for setting,value in pairs( data.default ) do
+                for player in ivalues(PlayerNumber) do
+                    self.dataCont[player][setting] = value
+                end
+                -- special case for the special boi
+                self.dataCont["ProfileSlot_Machine"][setting] = value
+            end
+        end
+        return self
+    end
+
+})
+
+--//================================================================
+
 local theme_conf_default = {
     BGBrightness = 100,
     DefaultBG = false,
@@ -107,7 +160,7 @@ function ApplyThemeSettings()
 
     for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
         local pstate = GAMESTATE:GetPlayerState(pn);
-        local plops = pstate:get_player_options_no_defect("ModsLevel_Preferred");
+        local plops = pstate:GetPlayerOptions("ModsLevel_Preferred");
         plops:FailSetting(fail_mapping[string.lower(tconf.FailType)])
         pstate:ApplyPreferredOptionsToOtherLevels();
     end;
@@ -126,6 +179,47 @@ local player_conf_default= {
     SpeedModifier = 25,
 }
 
+local notefield_default_prefs= {
+	speed_mod= 250,
+	speed_type= "multiple",
+	hidden= false,
+	hidden_offset= 120,
+	sudden= false,
+	sudden_offset= 190,
+	fade_dist= 40,
+	glow_during_fade= true,
+	fov= 45,
+	reverse= 1,
+	rotation_x= 0,
+	rotation_y= 0,
+	rotation_z= 0,
+	vanish_x= 0,
+	vanish_y= 0,
+	yoffset= 130,
+	zoom= 1,
+	zoom_x= 1,
+	zoom_y= 1,
+	zoom_z= 1,
+	-- migrated_from_newfield_name is temporary, remove it in 5.1.-4. -Kyz
+	migrated_from_newfield_name= false,
+}
+
+notefield_speed_types= {"multiple","constant", "maximum", "average", "constantaverage"}
+
+-- If the theme author uses Ctrl+F2 to reload scripts, the config that was
+-- loaded from the player's profile will not be reloaded.
+-- But the old instance of notefield_prefs_config still exists, so the data
+-- from it can be copied over.  The config system has a function for handling
+-- this.
+notefield_prefs_config= create_lua_config{
+	name= "notefield_prefs", file= "notefield_prefs.lua",
+	default= notefield_default_prefs,
+	-- use_alternate_config_prefix is meant for lua configs that are shared
+	-- between multiple themes.  It should be nil for preferences that will
+	-- only exist in your theme. -Kyz
+	use_alternate_config_prefix= "",
+}
+
 NOTESCONFIG = notefield_prefs_config;
 PLAYERCONFIG = create_lua_config{
     name = "PLAYERCONFIG", 
@@ -133,8 +227,12 @@ PLAYERCONFIG = create_lua_config{
     default = player_conf_default,
 }
 
-add_standard_lua_config_save_load_hooks(PLAYERCONFIG);
-set_notefield_default_yoffset(170)
+local function set_notefield_default_yoffset(yOffset)
+    -- Hey, move the notefield by this much.
+end
+
+--add_standard_lua_config_save_load_hooks(PLAYERCONFIG);
+-- set_notefield_default_yoffset(170)
 
 --//================================================================
 
@@ -212,4 +310,8 @@ function ResetPlayerTransform(pn)
     ResetPlayerView(pn)
 end;
 
+--/==/ The stub of the ye oldie 5.1-3
 
+function apply_notefield_prefs_nopn(read_bpm, field, prefs)
+
+end
