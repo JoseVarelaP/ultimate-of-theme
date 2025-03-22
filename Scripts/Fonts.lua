@@ -84,6 +84,11 @@ Fonts = {
     editor = {
         ["Main"] = "titillium regular",
     },
+    onlinelogin = {
+        ["Status"] = "regen strong",
+        ["Player"] = "titillium regular",
+        ["Header"] = "regen strong"
+    }
 }
 
 function Actor:LyricCommand(side)

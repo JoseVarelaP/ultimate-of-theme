@@ -123,34 +123,32 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
             end;
         end;
 
+        OptionsListOpenedMessageCommand=function(self)
+            self:ChangeReload( Global.pncursteps[pn] )
+        end,
+
         RefreshCommand=function(self)
             if GAMESTATE:IsSideJoined(pn) and Global.pncursteps[pn] then
                 if Global.state ~= "SelectSteps" then
                     self:visible(Global.oplist[pn]);
-                    if Global.oplist[pn] then
-                        local steps = Global.pncursteps[pn];
-                        self:ChangeReload(steps);
-                    end
                 else
                     self:visible(true);
                 end;
 
-                if Global.state ~= "SelectSteps" then
-                    return
-                end
-
-                local steps = Global.pncursteps[pn];
-                local skin = GetPreferredNoteskin(pn);
                 local prefs = notefield_prefs_config:get_data(pn);
+                if not Global.oplist[pn] then
+                    local steps = Global.pncursteps[pn];
+                    -- local skin = GetPreferredNoteskin(pn);
 
-                --self:set_vanish_type("FieldVanishType_RelativeToSelf")
+                    --self:set_vanish_type("FieldVanishType_RelativeToSelf")
 
-                if curskin[pn] ~= skin then
-                    --self:set_skin(skin, {});
-                    curskin[pn] = skin;
-                end;
+                    -- if curskin[pn] ~= skin then
+                    --     --self:set_skin(skin, {});
+                    --     curskin[pn] = skin;
+                    -- end;
 
-                self:ChangeReload(steps, skin);
+                    self:ChangeReload(steps, skin);
+                end
 
                 local speed = prefs.speed_mod;
                 local mode = prefs.speed_type;
@@ -160,6 +158,15 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                 --self:set_curr_second(curTime);
 
                 local tempstate = GAMESTATE:GetPlayerState(pn)
+                local playeroptions = tempstate:GetPlayerOptions("ModsLevel_Preferred")
+
+                local style = NOTESCONFIG:get_data(pn).speed_type
+                local speed = NOTESCONFIG:get_data(pn).speed_mod
+                
+                if style == "multiple" then
+                    playeroptions:XMod(speed/100)
+                end
+
                 local modstring = tempstate:GetPlayerOptionsString("ModsLevel_Preferred")
                 self:ModsFromString( modstring )
             end;
@@ -185,31 +192,6 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                 ]]
             end;
         end;
-
-        UpdateNotefieldMessageCommand=function(self)
-            --[[
-            if GAMESTATE:IsSideJoined(pn) and Global.pncursteps[pn] then
-                self:set_curr_second(curTime);
-            end;
-            ]]
-
-            -- Get the options we receieved from the optionslist, and parse them here.
-            --SCREENMAN:SystemMessage(NOTESCONFIG:get_data(pn).speed_mod)
-        end;
-        OptionsListChangedMessageCommand=function(self, params)
-            -- { Player = pn, Input = param.Input, Option = currentoption[pn] }
-            local playeroptions = GAMESTATE:GetPlayerState(pn):GetPlayerOptions("ModsLevel_Preferred")
-            
-            local style = NOTESCONFIG:get_data(pn).speed_type
-            local speed = NOTESCONFIG:get_data(pn).speed_mod
-            
-            SCREENMAN:SystemMessage(style .. " - " .. speed)
-            if style == "multiple" then
-                playeroptions:XMod(speed/100)
-            end
-
-            self:ModsFromString( playeroptions:GetString() )
-        end
     };
 
 end;
