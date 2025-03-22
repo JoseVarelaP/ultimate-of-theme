@@ -257,7 +257,7 @@ for i=1,#menutable do
     
     t[#t+1] = Def.BitmapText{
             Font = Fonts.mainmenu["Main"];
-            Text = menutable[i].name;
+            Text = THEME:GetString("Labels",menutable[i].name);
             InitCommand=cmd(zoom,0.42;y,originY-1;strokecolor,0.15,0.15,0.15,0.8;draworder,3;playcommand,"MainMenu");
             StateChangedMessageCommand=cmd(playcommand,"MainMenu");
             MainMenuMessageCommand=function(self) 
@@ -356,7 +356,7 @@ t[#t+1] = Def.BitmapText{
         StateChangedMessageCommand=function(self)
             local g = string.gsub(Global.songgroup, "~", "-");
             local attr = { Length = -1; Diffuse = color("#FFFFFFAA"); };
-            local prefix = "group: ";
+            local prefix = THEME:GetString("Labels","CurGroup");
             self:settext(string.upper(prefix .. g));
             self:AddAttribute(string.len(prefix), attr);
             self:diffusealpha(0.75);
@@ -385,7 +385,7 @@ t[#t+1] = Def.BitmapText{
             local a = string.format("%0"..string.len(b).."d",Global.selection);
             local len = string.len(b)
             local attr = { Length = len; Diffuse = color("#FFFFFFAA"); };
-            self:settext(string.upper(a.."  /  "..b.."  songs"));
+            self:settext(string.upper(a.."  /  "..b.."  ".. THEME:GetString("Labels","Songs")));
             self:AddAttribute(0, attr);
             self:AddAttribute(len + 5, attr);
         end;
@@ -407,7 +407,7 @@ t[#t+1] = Def.BitmapText{
 t[#t+1] = Def.BitmapText{
     Font = Fonts.mainmenu["Main"];
     InitCommand=cmd(x,SCREEN_CENTER_X;y,SCREEN_TOP+78;zoom,0.425;textglowmode,"TextGlowMode_Inner";strokecolor,0.3,0.3,0.3,1;diffusealpha,0;bob;effectmagnitude,0,2,0;effectperiod,1.75);
-    OnCommand=cmd(settext,"All players ready! Press &START; button to play!";playcommand,"MainMenu");
+    OnCommand=cmd(settext,THEME:GetString("Labels","EveryoneReady");playcommand,"MainMenu");
     CodeMessageCommand=cmd(playcommand,"MainMenu");
     MainMenuMessageCommand=function(self)
     
