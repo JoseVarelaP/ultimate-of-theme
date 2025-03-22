@@ -379,7 +379,7 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                 -- title
                 Def.BitmapText{
                     Font = "regen strong";
-                    Text = string.upper("Player  Options");
+                    Text = string.upper( THEME:GetString("Labels","PlayerOptions") );
                     InitCommand=cmd(x,4*-pnSide(pn);zoomy,0.31;zoomx,0.3075;horizalign,pnAlign(OtherPlayer[pn]);strokecolor,BoostColor(PlayerColor(pn,0.9),1/3);diffusealpha,0);
                     OptionsListOpenedMessageCommand=function(self,param)
                         if param and param.Player == pn then

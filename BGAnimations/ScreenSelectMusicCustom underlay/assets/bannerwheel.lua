@@ -85,7 +85,7 @@ function LoadBanner(self,item)
 	--self:Load(nil);
 	path = Global.songlist[item]:GetJacketPath(); 
 	if path ~= nil --[[and FILEMAN:DoesFileExist(path)]] then
-		self:Load(path)
+		self:LoadFromCachedBanner(path)
 	else
 
 		path = Global.songlist[item]:GetBannerPath(); 

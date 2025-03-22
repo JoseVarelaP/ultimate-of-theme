@@ -112,7 +112,7 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                 -- value
                 Def.BitmapText{
                     Font = Fonts.counter["Main"];
-                    Text = numjudge;
+                    Text = 0;
                     Name = labels[i].Key;
                     InitCommand=cmd(zoom,0.4;diffuse,BoostColor(LabelColor(labels[i].Value),2);
                         strokecolor,BoostColor(LabelColor(labels[i].Value),0.25);horizalign,pnAlign(pn);x,6* -pnSide(pn);maxwidth,64);
@@ -146,7 +146,7 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
             -- value
             Def.BitmapText{
                 Font = Fonts.counter["Main"];
-                Text = numjudge;
+                Text = IsGame("pump") and FormatGradePIU("Grade_Tier01") or FormatGrade("Grade_Tier01");
                 Name = "Grade";
                 InitCommand=cmd(zoom,0.4;horizalign,pnAlign(pn);strokecolor,0.1,0.1,0.1,1;x,-8 * -pnSide(pn));
             },
