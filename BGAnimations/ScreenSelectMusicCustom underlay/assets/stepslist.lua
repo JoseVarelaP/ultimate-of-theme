@@ -285,7 +285,7 @@ local hs_p = Def.ActorFrame{
     },
     Def.BitmapText{
         Font = Fonts.radar["Label"];
-        Text = string.upper("Personal Best");
+        Text = ToUpper( THEME:GetString("Labels","Personal Best") );
         InitCommand=cmd(zoomx,0.31;zoomy,0.3;diffuse,HighlightColor();strokecolor,BoostColor(HighlightColor(),0.3);y,-18);
     },
 };
@@ -312,7 +312,7 @@ local hs_m = Def.ActorFrame{
     },
     Def.BitmapText{
         Font = Fonts.radar["Label"];
-        Text = string.upper("Machine Best");
+        Text = ToUpper( THEME:GetString("Labels","Machine Best") );
         InitCommand=cmd(zoomx,0.31;zoomy,0.3;diffuse,HighlightColor();strokecolor,BoostColor(HighlightColor(),0.3);y,18);
     },
 };
@@ -337,7 +337,7 @@ local hs_o = Def.ActorFrame{
     },
     Def.BitmapText{
         Font = Fonts.radar["Label"];
-        Text = string.upper("Online Best");
+        Text = ToUpper( THEME:GetString("Labels","Online Best") );
         InitCommand=cmd(zoomx,0.31;zoomy,0.3;diffuse,HighlightColor();strokecolor,BoostColor(HighlightColor(),0.3);y,18);
     },
 };

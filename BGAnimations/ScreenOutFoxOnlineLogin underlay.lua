@@ -37,7 +37,7 @@ local bg = Def.ActorFrame{
 	},
 
 	Def.Quad{
-		InitCommand=cmd(zoomto,_screen.w,_screen.h;diffuse,BoostColor(Global.bgcolor,0.6);cropbottom,1/25;fadetop,0.5);
+		InitCommand=cmd(zoomto,_screen.w,_screen.h;diffuse,BoostColor(Global.bgcolor,0.6);fadetop,0.5);
 	},
 
 	LoadActor(THEME:GetPathG("","_pattern"))..{
@@ -71,7 +71,7 @@ for ind,plr in pairs(GAMESTATE:GetHumanPlayers()) do
 				self:finishtweening()
 				self:GetChild("Status"):settext(ToUpper(successText)):diffuse(Color.Green)
 				:strokecolor(0,0.25,0,0.25)
-				self:GetChild("Loading"):setstate(2):zoom(0.65):linear(0.2):diffusealpha(0):zoom(0.5)
+				self:GetChild("Loading"):setstate(2):stopeffect():zoom(0.65):linear(0.2):zoom(0.5)
 				--self:GetChild("Glow"):easeoutexpo(0.2):diffuse(Color.Green):easeoutexpo(1.5):diffuse(Color.White):diffusealpha(0)
 
 				self:GetChild("SoundSuccess"):play()

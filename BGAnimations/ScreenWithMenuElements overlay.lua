@@ -1,3 +1,4 @@
+--[[
 local function Update(self,dt)
     Global.realH = tonumber(PREFSMAN:GetPreference("DisplayHeight"))
     Global.realW = Global.realH*(SCREEN_WIDTH/SCREEN_HEIGHT)
@@ -14,6 +15,9 @@ local t = MouseInputActor()..{
     FinalDecisionMessageCommand=function(self) self:SetUpdateFunction(nil); end;
     MenuInputMessageCommand=function(self,param)  end;
 }
+]]
+
+local t = Def.ActorFrame{}
 
 --=======================================================================================================================
 --NAVIGATION ICONS

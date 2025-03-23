@@ -6,7 +6,7 @@ local item = tonumber(gc:GetName());
 
 t[#t+1] = Def.BitmapText{
 		Font = "regen silver";
-		Text = string.upper(gc:GetText());
+		Text = string.upper(THEME:GetString("ScreenTitleMenu",gc:GetText()));
 		InitCommand=cmd(zoom,0.7;y,2;horizalign,left;strokecolor,0,0,0,0.75;playcommand,"Disable");
 		GainFocusCommand=cmd(stoptweening;decelerate,0.225;diffusealpha,1;x,0-centered);
 		LoseFocusCommand=cmd(stoptweening;decelerate,0.225;diffusealpha,0;x,-20-centered);

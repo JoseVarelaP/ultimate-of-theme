@@ -10,7 +10,7 @@ t[#t+1] = Def.Quad{
 
 t[#t+1] = Def.BitmapText{
         Font = "titillium regular";
-		InitCommand=cmd(zoom,0.41;y,29;strokecolor,0,0,0,0.25;settext,gc:GetText());
+		InitCommand=cmd(zoom,0.41;y,29;strokecolor,0,0,0,0.25;settext,THEME:GetString("ScreenTitleMenu",gc:GetText()));
 		GainFocusCommand=cmd(stoptweening;linear,0.25;diffuse,HighlightColor();strokecolor,BoostColor(HighlightColor(),0.3));
 		LoseFocusCommand=cmd(stoptweening;linear,0.25;diffuse,1,1,1,1;strokecolor,0,0,0,0.25);
 };

@@ -33,9 +33,13 @@ local spacing = 290;
 			OnCommand=function(self)
 				self:diffuse(0.66,0.66,0.66,0.5);
 				self:strokecolor(0.1,0.1,0.1,1);
+				self:playcommand("UpdateClock")
 			end;
+			OffCommand=function(self)
+				self:stoptweening()
+			end,
 
-			UpdateMessageCommand=function(self)
+			UpdateClockCommand=function(self)
 				local hour = CapDigits(Hour(), 0, 2);
 				local min = CapDigits(Minute(), 0, 2);
 				local sec = CapDigits(Second(), 0, 2);
@@ -47,6 +51,7 @@ local spacing = 290;
 				local date = Year().."-"..month.."-"..day;
 
 				self:settext(date.."     "..time);
+				self:sleep(0.5):queuecommand("UpdateClock")
 			end;	
 	};
 
