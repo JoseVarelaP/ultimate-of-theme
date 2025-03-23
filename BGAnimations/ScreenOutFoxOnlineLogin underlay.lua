@@ -96,6 +96,8 @@ for ind,plr in pairs(GAMESTATE:GetHumanPlayers()) do
 
 				self:GetChild("SoundFail"):play()
 
+				self:GetChild("CancelText"):stoptweening():diffusealpha(0):sleep(0.2):decelerate(0.2):diffusealpha(1)
+
 				if params.Reason then
 					self:GetChild("Frame"):decelerate(0.2):zoom(1)
 					local reasonTranslated = params.Reason
@@ -111,7 +113,7 @@ for ind,plr in pairs(GAMESTATE:GetHumanPlayers()) do
 		SendingLinkCodeCommand=function(self,params)
 			if params.Player == plr then
 				self:GetChild("Frame"):decelerate(0.25):zoom(0.5)
-				self:GetChild("Loading"):visible(true):diffuse(Color.White):y(0)
+				self:GetChild("Loading"):visible(true):diffuse(Color.White):y(0):setstate(1)
 				self:GetChild("Status"):decelerate(0.25):y(30):settext(ToUpper(logginginText)):diffuse(Color.White)
 			end
 		end,
@@ -172,11 +174,11 @@ for ind,plr in pairs(GAMESTATE:GetHumanPlayers()) do
 		},
 
 		Def.BitmapText{
-			Font="ScreenOutFoxOnlineLogin text",
+			Font="corbel",
 			Text=threeKey and cancelButtonThreeButton or cancelButtonText,
 			Name="CancelText",
 			InitCommand=function(self)
-				self:y( 60 ):zoom(0.5):wrapwidthpixels(330)
+				self:y( 80 ):zoom(0.4):wrapwidthpixels(500)
 				self:visible( allowOnlineGuests and not isPersistent )
 			end,
 			SendingLinkCodeCommand=function(self,params)
@@ -261,10 +263,10 @@ for ind,plr in pairs(GAMESTATE:GetHumanPlayers()) do
 			end,
 
 			Def.BitmapText{
-				Font="ScreenOutFoxOnlineLogin text",
+				Font="corbel",
 				Text=Screen.String("LoginWindowInstructions"),
 				InitCommand=function(self)
-					self:xy( -40,-70 ):zoom(0.45):wrapwidthpixels(180)
+					self:xy( 0,-26 ):zoom(0.4):wrapwidthpixels(580)
 				end,
 			},
 
@@ -293,20 +295,25 @@ for ind,plr in pairs(GAMESTATE:GetHumanPlayers()) do
 						end
 					end
 
-					self:SetVertices(vertices):zoom(2.5):xy( 10,-100 )
+					self:SetVertices(vertices):zoom(2.5):xy( -(#data/2)*2.5 ,-110 )
 				end
-			}
+			},
 		}
 
+		local frame_width = 18;
+		local frame_height = 0.6;
 		for i = 1,4 do
-			plrAct[#plrAct+1] = Def.Sprite{
-				Texture=THEME:GetPathG("ScreenOutFoxOnlineLogin items/Player Digit","Code"),
+			plrAct[#plrAct+1] = Def.ActorFrame{
 				InitCommand=function(self)
-					self:xy( scale( i, 1, 4, -50, 50 ), -10 ):zoom(0.5):animate(0)
+					self:xy( scale( i, 1, 4, -60, 60 ), 10 )
 				end,
 				TokenCodeChangedCommand=function(self,params)
 					if params.Player == plr then
-						self:setstate( params.Length >= i and 1 or 0 )
+						if params.Length >= i then
+							self:GetChild("Pin"):playcommand("Show")
+						else
+							self:GetChild("Pin"):playcommand("Hide")
+						end
 					end
 				end,
 				SendingLinkCodeCommand=function(self,params)
@@ -316,10 +323,74 @@ for ind,plr in pairs(GAMESTATE:GetHumanPlayers()) do
 				end,
 				PlayerLoginFailCommand=function(self,params)
 					if params.Player == plr and params.NeedsLinkCode then
-						self:visible(true):setstate(0)
+						self:visible(true)
+						self:GetChild("Pin"):playcommand("Hide")
 					end
 				end,
+
+				Def.Sprite{
+					Texture=THEME:GetPathG("","lifeborder"),
+					InitCommand=function (self)
+						self:animate(0):setstate(1)
+						self:zoomto(frame_width,frame_height*self:GetHeight())
+					end
+				},
+				
+				Def.Sprite{
+					Texture=THEME:GetPathG("","lifeborder"),
+					InitCommand=function (self)
+						self:animate(0):setstate(0):halign(1)
+						:zoom(frame_height)
+						:x(-frame_width/2)
+					end
+				},
+		
+				Def.Sprite{
+					Texture=THEME:GetPathG("","lifeborder"),
+					InitCommand=function (self)
+						self:animate(0):setstate(2):halign(0)
+						:zoom(frame_height)
+						:x(frame_width/2)
+					end
+				},
+
+				Def.Sprite{
+					Name="Pin",
+					Texture=THEME:GetPathG("","cursor"),
+					InitCommand=function (self)
+						self:animate(0):zoom( frame_height-.3 )
+						:diffusealpha(0)
+					end,
+					ShowCommand=function (self)
+						self:stoptweening()
+						:easeoutexpo(0.3):diffusealpha(1)
+					end,
+					HideCommand=function (self)
+						self:stoptweening():diffusealpha(0)
+					end
+				},
 			}
+			-- plrAct[#plrAct+1] = Def.Sprite{
+			-- 	Texture=THEME:GetPathG("ScreenOutFoxOnlineLogin items/Player Digit","Code"),
+			-- 	InitCommand=function(self)
+			-- 		self:xy( scale( i, 1, 4, -50, 50 ), -10 ):zoom(0.5):animate(0)
+			-- 	end,
+			-- 	TokenCodeChangedCommand=function(self,params)
+			-- 		if params.Player == plr then
+			-- 			self:setstate( params.Length >= i and 1 or 0 )
+			-- 		end
+			-- 	end,
+			-- 	SendingLinkCodeCommand=function(self,params)
+			-- 		if params.Player == plr then
+			-- 			self:visible(false)
+			-- 		end
+			-- 	end,
+			-- 	PlayerLoginFailCommand=function(self,params)
+			-- 		if params.Player == plr and params.NeedsLinkCode then
+			-- 			self:visible(true):setstate(0)
+			-- 		end
+			-- 	end,
+			-- }
 		end
 	end
 
@@ -335,7 +406,7 @@ for ind,plr in pairs(GAMESTATE:GetHumanPlayers()) do
 
 	local keyboard = Def.ActorFrame{
 		InitCommand=function (self)
-			self:y(26):visible(not isPersistent and profile:GetType() ~= "ProfileType_Normal")
+			self:y(48):visible(not isPersistent and profile:GetType() ~= "ProfileType_Normal")
 		end,
 		SendingLinkCodeCommand=function(self,params)
 			if params.Player == plr then
@@ -392,8 +463,11 @@ for ind,plr in pairs(GAMESTATE:GetHumanPlayers()) do
 
 		for v in ivalues(characters) do
 			t[#t+1] = Def.BitmapText{
-				Font="ScreenOutFoxOnlineLogin text",
+				Font="regen small",
 				Text=v,
+				InitCommand=function (self)
+					self:strokecolor(PlayerColor(plr, 0.5))
+				end
 			}
 		end
 
@@ -419,12 +493,25 @@ for ind,plr in pairs(GAMESTATE:GetHumanPlayers()) do
 	for i,v in ipairs({-1,1}) do
 		keyboard[#keyboard+1] = Def.Sprite{
 			Name=i == 1 and "Left" or "Right",
-			Texture=THEME:GetPathG("ScreenOutFoxOnlineLogin","items/MoveCursor"),
+			Texture=THEME:GetPathG("","miniarrows"),
 			InitCommand=function(self)
-				self:zoom(0.5):xy( 74 * v,2 ):rotationz( i == 1 and 180 or 0 )
+				self:zoom(0.5):xy( 74 * v,2 ):rotationz( i == 1 and 0 or 180 )
+				:animate(0)
 			end,
 			PressedCommand=function (self)
 				self:finishtweening():zoom(0.6):easeoutquad(0.25):zoom(0.5)
+			end
+		}
+
+		keyboard[#keyboard+1] = Def.Sprite{
+			Name=i == 1 and "Left" or "Right",
+			Texture=THEME:GetPathG("","miniarrows"),
+			InitCommand=function(self)
+				self:zoom(0.5):xy( 74 * v,2 ):rotationz( i == 1 and 0 or 180 )
+				:animate(0):setstate(1):diffusealpha(0)
+			end,
+			PressedCommand=function (self)
+				self:finishtweening():diffusealpha(1):easeoutquad(0.25):diffusealpha(0)
 			end
 		}
 	end
