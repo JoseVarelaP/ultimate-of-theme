@@ -174,7 +174,7 @@ end;
 
 function ConfigAction(label, func)
     return { 
-        Name = label,
+        Name = THEME:GetString("Menus",label),
         Type = "action",
         Action = func,
     }

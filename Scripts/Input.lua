@@ -104,8 +104,8 @@ end;
 
 --//================================================================
 
-function MouseDown(self, range, scr)
-	if ButtonHover(self,range) then
+function MouseDown(self, range, scr, disabled)
+	if ButtonHover(self,range) and not disabled then
 		self:stoptweening();
 		self:glow(1,1,1,1);
 		self:linear(0.2)
@@ -113,6 +113,7 @@ function MouseDown(self, range, scr)
 		Global.screen = SCREENMAN:GetTopScreen():GetName();
 		if GAMESTATE:GetNumSidesJoined() == 0 then
 			GAMESTATE:JoinPlayer(PLAYER_1);
+            GAMESTATE:SetCurrentStyle("single")
 		end;
 		SCREENMAN:SetNewScreen(scr)
 	end;
@@ -120,12 +121,15 @@ end;
 
 --//================================================================
 
-function ButtonHover(self,range)
-	if MouseOver(self,range) then
+function ButtonHover(self,range,disabled)
+	if MouseOver(self,range) and not disabled then
 		self:playcommand("GainFocus");
 		return true;
 	else
 		self:playcommand("LoseFocus");
+        if disabled and self:GetCommand("Disabled") then
+            self:playcommand("Disabled");
+        end
 		return false;
 	end;
 end;	

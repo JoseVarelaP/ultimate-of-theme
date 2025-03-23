@@ -72,7 +72,7 @@ t[#t+1] = Def.BitmapText{
 				self:effectcolor1(0.5,0.5,0.5,0.5);
 				self:effectcolor2(1,1,1,0.5);
 				self:effectperiod(1);
-				self:settext("Press &START; to join");
+				self:settext(THEME:GetString("Labels","JoinText"));
 			end;
 
 		end

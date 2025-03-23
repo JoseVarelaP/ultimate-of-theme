@@ -16,31 +16,6 @@ local function CanShowNotefield()
     return false;
 end;
 
-------
--- Helper functions to obtain Scroll speed informtion
-local ObtainSpeedType = function( pOptions )
-    local sptype = 1
-    if pOptions:XMod() then sptype = 1 end
-    if pOptions:CMod() then sptype = 2 end
-    if pOptions:MMod() then sptype = 3 end
-    if pOptions:AMod() then sptype = 4 end
-    if pOptions:CAMod() then sptype = 5 end
-
-    return sptype
-end
-local GetSpeed = function( pOptions, CurType )
-    if not CurType then return 0 end
-
-    if CurType == 1 then return pOptions:XMod()*100 end
-    if CurType == 2 then return pOptions:CMod() end
-    if CurType == 3 then return pOptions:MMod() end
-    if CurType == 4 then return pOptions:AMod() end
-    if CurType == 5 then return pOptions:CAMod() end
-
-    return 0
-end
-------
-
 local t = Def.ActorFrame{
     InitCommand=function(self)
         --[[self:SetUpdateFunction(UpdateTime);]]
@@ -100,7 +75,7 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
         FieldID= 0,
 
         InitCommand=function(self)
-            self:xy(SCREEN_CENTER_X,40)
+            self:xy(SCREEN_CENTER_X,SCREEN_CENTER_Y)
             if GAMESTATE:IsPlayerEnabled(PLAYER_1) and GAMESTATE:IsPlayerEnabled(PLAYER_2) then
                 self:x( SCREEN_CENTER_X + 150 * pnSide(pn) )
             end
@@ -165,10 +140,27 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                 
                 if style == "multiple" then
                     playeroptions:XMod(speed/100)
+                elseif style == "average" then
+                    playeroptions:AMod(speed)
+                elseif style == "constant" then
+                    playeroptions:CMod(speed)
+                elseif style == "maximum" then
+                    playeroptions:MMod(speed)
+                elseif style == "constantaverage" then
+                    playeroptions:CAMod(speed)
                 end
 
-                local modstring = tempstate:GetPlayerOptionsString("ModsLevel_Preferred")
-                self:ModsFromString( modstring )
+                playeroptions:Hidden( NOTESCONFIG:get_data(pn).hidden == true and 1 or 0 )
+                playeroptions:Sudden( NOTESCONFIG:get_data(pn).sudden == true and 1 or 0 )
+                playeroptions:Reverse( NOTESCONFIG:get_data(pn).reverse == -1 and 1 or 0 )
+
+                self:y( NOTESCONFIG:get_data(pn).reverse == -1 and SCREEN_CENTER_Y+50 or SCREEN_CENTER_Y-50 )
+
+                if self:GetVisible() then
+                    local modstring = playeroptions:GetString()
+                    self:ModsFromString("clearall")
+                    self:ModsFromString( modstring )
+                end
             end;
         end;
 

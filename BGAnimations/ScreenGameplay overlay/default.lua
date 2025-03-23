@@ -1,12 +1,12 @@
 local paused = false;
 local missfail = THEMECONFIG:get_data("ProfileSlot_Invalid").FailMissCombo;
 
-local function Update(self,dt)
-    MESSAGEMAN:Broadcast("Update");
-end;
+-- local function Update(self,dt)
+--     MESSAGEMAN:Broadcast("Update");
+-- end;
 
 local t = Def.ActorFrame{
-	InitCommand=cmd(SetUpdateFunction,Update);
+	--InitCommand=cmd(SetUpdateFunction,Update);
 	OnCommand=function() Global.disqualified = false; end;
 	PausedMessageCommand=function() Global.disqualified = true; paused = true; end;
 	UnpausedMessageCommand=function() paused = false; end;

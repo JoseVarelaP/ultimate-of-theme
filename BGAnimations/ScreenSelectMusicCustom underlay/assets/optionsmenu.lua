@@ -283,7 +283,7 @@ t[#t+1] = Def.ActorFrame{
     -- title
     Def.BitmapText{
         Font = Fonts.options["Main"];
-        Text = "Game Options";
+        Text = THEME:GetString("Labels","Game Options");
         InitCommand=cmd(y,-window_h/2+10;vertalign,top;zoom,0.6;strokecolor,0.125,0.125,0.125,0.5);
     },
 }
