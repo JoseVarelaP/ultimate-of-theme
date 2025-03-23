@@ -127,7 +127,7 @@ function FormatSpeed(value, stype)
     elseif mode == 1 or mode == "x" or mode == "multiple" then
         return string.format("%.2f",value/100).."X";
     else
-        LuaError("Invalid or nil speed mode");
+        lua.ReportScriptError("Invalid or nil speed mode");
         return value;
     end;
 

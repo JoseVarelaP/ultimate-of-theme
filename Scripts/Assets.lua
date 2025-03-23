@@ -1,13 +1,13 @@
 
 --//================================================================
 
-function LoadBanner(self,item)
+function ULLoadBanner(self,item)
     local path;
 
     --self:Load(nil);
     path = Global.songlist[item]:GetJacketPath(); 
     if path ~= nil --[[and FILEMAN:DoesFileExist(path)]] then
-        self:Load(path)
+        self:LoadFromCachedBanner(path)
     else
 
         path = Global.songlist[item]:GetBannerPath(); 
@@ -24,7 +24,7 @@ end;
 
 --//================================================================
 
-function LoadBackground(self,song)
+function ULLoadBackground(self,song)
     local tconf = THEMECONFIG:get_data("ProfileSlot_Invalid");
 
     local rmov = FindRandomMovie(song)
@@ -97,7 +97,7 @@ end;
 
 --//================================================================
 
-function LoadJacket(self,song)
+function ULLoadJacket(self,song)
     local path;
     path = song:GetJacketPath(); 
     if path ~= nil then

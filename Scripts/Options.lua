@@ -226,7 +226,7 @@ local function ChangeConfig(param)
         newvalue = clamp(newvalue, min, max);
         newvalue = math.round(newvalue * 100000)/100000
     else
-        LuaError("Invalid option choices/range");
+        lua.ReportScriptError("Invalid option choices/range");
     end;
 
     set_element_by_path(conf:get_data(pn), field, newvalue);

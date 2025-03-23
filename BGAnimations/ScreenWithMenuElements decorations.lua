@@ -7,10 +7,14 @@ local spacing = 290;
 --=======================================================================================================================
 
 	t[#t+1] = LoadActor(THEME:GetPathG("","border"))..{
-			InitCommand=cmd(CenterX;y,SCREEN_TOP+32;zoom,-0.445;vertalign,top;diffuse,0.8,0.8,0.8,1);
+		InitCommand=function(self)
+			self:CenterX():y(SCREEN_TOP+32):zoom(-0.445):vertalign(top):diffuse(0.8,0.8,0.8,1)
+		end,
 	};
 	t[#t+1] = LoadActor(THEME:GetPathG("","footer"))..{
-			InitCommand=cmd(CenterX;y,SCREEN_BOTTOM+8);
+		InitCommand=function(self)
+			self:CenterX():y(SCREEN_BOTTOM+8)
+		end,
 	};
 
 	-- version

@@ -38,7 +38,7 @@ t[#t+1] = Def.ActorFrame{
     Def.Sprite{
         InitCommand=cmd(horizalign,left;vertalign,top);
         OnCommand=function(self)
-            LoadJacket(self,Global.song);
+            ULLoadJacket(self,Global.song);
             self:scaletoclipped(48,48);
         end;
     },

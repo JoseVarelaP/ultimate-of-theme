@@ -63,6 +63,7 @@ end;
 
 --//================================================================
 
+--[[
 function MouseInputActor()
     return Def.ActorFrame{
         UnlockCommand=function() Global.lockinput = false; MESSAGEMAN:Broadcast("Unlock"); end;
@@ -133,5 +134,6 @@ function ButtonHover(self,range,disabled)
 		return false;
 	end;
 end;	
+]]
 
 --//================================================================

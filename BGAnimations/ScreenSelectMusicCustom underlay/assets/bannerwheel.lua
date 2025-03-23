@@ -79,29 +79,6 @@ end;
 
 --//================================================================
 
-function LoadBanner(self,item)
-	local path;
-
-	--self:Load(nil);
-	path = Global.songlist[item]:GetJacketPath(); 
-	if path ~= nil --[[and FILEMAN:DoesFileExist(path)]] then
-		self:LoadFromCachedBanner(path)
-	else
-
-		path = Global.songlist[item]:GetBannerPath(); 
-		if path ~= nil --[[and FILEMAN:DoesFileExist(path)]] then
-			self:LoadFromCachedBanner(path)
-			--self:Load(path)
-		else
-			self:Load(THEME:GetPathG("Common fallback","banner"));	
-			--self:Load(THEME:GetPathG("Common fallback","banner"));
-		end;
-
-	end;
-end;
-
---//================================================================
-
 local function AdjustBanner(self)
 	self:cropleft(0);
 	self:cropright(0);
@@ -347,7 +324,7 @@ for i=1,maxitems do
 					end
 
 					if Global.songlist[item] and reload then
-						LoadBanner(self,item);
+						ULLoadBanner(self,item);
 						AdjustBanner(self);
 					end;
 

@@ -31,7 +31,7 @@ t[#t+1] = Def.Sprite{
 
 	EvalCommand=function(self)
 
-        LoadBackground(self,Global.song);
+        ULLoadBackground(self,Global.song);
         self:stoptweening();
         self:diffuse(0.2,0.2,0.2,0);
         self:cropbottom(0.15);
@@ -57,7 +57,7 @@ t[#t+1] = Def.Sprite{
 	UnloadMessageCommand=cmd(Load,nil);
 	LoadCommand=function(self)
 
-		LoadBackground(self,Global.song);
+		ULLoadBackground(self,Global.song);
 		
 		ratio = self:GetWidth()/self:GetHeight();
 		adjust = ((16/9) - ratio)/4;
