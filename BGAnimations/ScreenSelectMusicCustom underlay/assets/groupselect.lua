@@ -325,7 +325,41 @@ end;
 				end;
 			};
 
+			Def.ActorFrame{
+				InitCommand=function (self)
+					self:y(28)
+				end,
+				StateChangedMessageCommand=cmd(playcommand,"SongGroup");
+				SongGroupMessageCommand=function(self)
+					-- local a = string.format("%0"..string.len(#Global.allgroups).."d",Global.selection);
+					-- local b = #Global.allgroups;
+					local curletter = ToUpper(string.sub(Global.allgroups[Global.selection]["Name"], 1, 1))
+					if self:GetChild("Letter").lastletter ~= curletter then
+						self:GetChild("Letter").lastletter = curletter
+						self:playcommand("ShowLetter")
+					end
+				end,
+				ShowLetterCommand=function (self)
+					self:stoptweening():decelerate(0.2):zoom(1):diffusealpha(1):sleep(0.2):decelerate(0.2):diffusealpha(0):zoom(0.9)
+					self:GetChild("Letter"):settext( self:GetChild("Letter").lastletter )
+				end,
 
+				Def.Sprite{
+					Texture=THEME:GetPathG("","smallpanel"),
+					OnCommand=function (self)
+						self:zoom(0.5)
+					end
+				},
+
+				Def.BitmapText{
+					Name="Letter",
+					Font = Fonts.groupselect["Folders"];
+					InitCommand=function(self)
+						self:zoom(0.5):strokecolor(0.175,0.175,0.175,0.75)
+						self.lastletter = nil
+					end,
+				}
+			}
 
 
 	};

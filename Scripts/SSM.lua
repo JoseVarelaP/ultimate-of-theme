@@ -48,7 +48,10 @@ end;
 
 function SetGroups()
     Global.allgroups = SONGMAN:GetSongGroupNames();
-    table.sort( Global.allgroups ) -- Sort them alphabetically.
+    -- Sort them alphabetically.
+    table.sort( Global.allgroups, function (a,b)
+        return ToLower(a) < ToLower(b)
+    end )
     Global.allgroups = FilterGroups(Global.allgroups);
 
     local pref = GAMESTATE:GetPreferredSong()
