@@ -123,37 +123,39 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
         end;
 
         --grade
-        p[#p+1] = Def.ActorFrame{
-            InitCommand=cmd(vertalign,bottom;horizalign,pnAlign(pn);y,(1*-spacing)+2;x,(spacing+4) * -pnSide(pn));
-            JudgmentMessageCommand=function(self)
-                local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn);
-                local grade;
+        --Version date check is here as there was a bug with GetGradeFromPercent, as it went over the
+        --grades declared by the theme. I fixed this on 2025-03-23, hence the check, so you don't get
+        --bombarded with metric missing window prompts on earlier OutFox builds.
+        if tonumber(VersionDate()) >= 20250323 then
+            p[#p+1] = Def.ActorFrame{
+                InitCommand=cmd(vertalign,bottom;horizalign,pnAlign(pn);y,(1*-spacing)+2;x,(spacing+4) * -pnSide(pn));
+                JudgmentMessageCommand=function(self)
+                    local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn);
+                    local grade;
 
-                if IsGame("pump") then
-                    grade = PIUGrading(pn);
-                    grade = FormatGradePIU(grade)
-                else
-                    local curdp = pss:GetActualDancePoints();
-                    local maxdp = pss:GetCurrentPossibleDancePoints();
-                    local dp = curdp / clamp(maxdp,1,maxdp);
-                    grade = GetGradeFromPercent(dp, false)
-                    grade = FormatGrade(grade)
+                    if IsGame("pump") then
+                        grade = PIUGrading(pn);
+                        grade = FormatGradePIU(grade)
+                    else
+                        local curdp = pss:GetActualDancePoints();
+                        local maxdp = pss:GetCurrentPossibleDancePoints();
+                        local dp = curdp / clamp(maxdp,1,maxdp);
+                        grade = GetGradeFromPercent(dp, false)
+                        grade = FormatGrade(grade)
+                    end;
+
+                    self:GetChild("Grade"):settext(grade);
                 end;
 
-                self:GetChild("Grade"):settext(grade);
-            end;
-
-            -- value
-            Def.BitmapText{
-                Font = Fonts.counter["Main"];
-                Text = IsGame("pump") and FormatGradePIU("Grade_Tier01") or FormatGrade("Grade_Tier01");
-                Name = "Grade";
-                InitCommand=cmd(zoom,0.4;horizalign,pnAlign(pn);strokecolor,0.1,0.1,0.1,1;x,-8 * -pnSide(pn));
-            },
-        };
-
-
-
+                -- value
+                Def.BitmapText{
+                    Font = Fonts.counter["Main"];
+                    Text = IsGame("pump") and FormatGradePIU("Grade_Tier01") or FormatGrade("Grade_Tier01");
+                    Name = "Grade";
+                    InitCommand=cmd(zoom,0.4;horizalign,pnAlign(pn);strokecolor,0.1,0.1,0.1,1;x,-8 * -pnSide(pn));
+                },
+            };
+        end
 
         t[#t+1] = p;
     end;
