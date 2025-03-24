@@ -3,6 +3,7 @@ local t = Def.ActorFrame{}
 local scoresubmitted = THEME:GetString("ScreenSystemLayer","OFOnlineScoreSent")
 local profilesynced = THEME:GetString("ScreenSystemLayer","OFOnlineProfileSynced")
 local profilefailSync = THEME:GetString("ScreenSystemLayer","OFOnlineProfileFailSync")
+local failconnectserver = THEME:GetString("ScreenSystemLayer","OFOnlineFailedToServer")
 local connectedtoserver = THEME:GetString("ScreenSystemLayer","OFOnlineConnectedToServer")
 local errormessage = THEME:GetString("ScreenSystemLayer","OFOnlineErrorMessage")
 local scoresavetimeout = THEME:GetString("ScreenSystemLayer","OFScoreSaveTimeout")
@@ -50,7 +51,10 @@ for ind,plr in pairs(PlayerNumber) do
 			end
 			if params.Name == "MachineLogin" then
 				self:x(SCREEN_CENTER_X)
-				self:GetChild("Status"):settext(connectedtoserver)
+				local loginsucceed = params.StatusCode == 200
+				self:GetChild("ColorIcon"):visible( loginsucceed )
+				self:GetChild("ErrorIcon"):visible( not loginsucceed )
+				self:GetChild("Status"):settext( loginsucceed and connectedtoserver or failconnectserver)
 				self:playcommand("ActionPlay")
 			end
 		end,
