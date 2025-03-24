@@ -70,6 +70,7 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
 
                     if param.TapNoteScore == "TapNoteScore_Miss" or
                        param.TapNoteScore == "TapNoteScore_CheckpointMiss" or
+                       param.TapNoteScore == "TapNoteScore_HitMine" or
                        param.TapNoteScore == "TapNoteScore_AvoidMine" then
                     return
                     end;

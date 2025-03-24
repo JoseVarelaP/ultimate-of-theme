@@ -277,21 +277,21 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
 				Def.BitmapText{
 					Font = "regen strong";
 					Text = i;
-					InitCommand=cmd(x,-80+(30*pnSide(pn));zoomy,0.31;zoomx,0.3075;halign,1;strokecolor,BoostColor(PlayerColor(pn,0.9),1/3);diffusealpha,1);
+					InitCommand=cmd(x,-80+(30*pnSide(pn));zoomy,0.31;zoomx,0.3075;halign,1;strokecolor,0.2,0.2,0.2,1;diffusealpha,1);
 				},
 
 				Def.BitmapText{
 					Name = "User",
 					Font = Fonts.stepslist["Label"];
 					Text = "-----";
-					InitCommand=cmd(x,-70+(30*pnSide(pn));zoomy,0.31;zoomx,0.3075;halign,0;strokecolor,BoostColor(PlayerColor(pn,0.9),1/3);diffusealpha,1);
+					InitCommand=cmd(x,-70+(30*pnSide(pn));zoomy,0.31;zoomx,0.3075;halign,0;strokecolor,0.2,0.2,0.2,1;diffusealpha,1);
 				},
 
 				Def.BitmapText{
 					Name = "Score",
 					Font = "regen strong";
 					Text = "--.--%",
-					InitCommand=cmd(x,70+(30*pnSide(pn));zoomy,0.31;zoomx,0.3075;halign,1;strokecolor,BoostColor(PlayerColor(pn,0.9),1/3);diffusealpha,1);
+					InitCommand=cmd(x,70+(30*pnSide(pn));zoomy,0.31;zoomx,0.3075;halign,1;strokecolor,0.2,0.2,0.2,1;diffusealpha,1);
 				},
 			}
 		end

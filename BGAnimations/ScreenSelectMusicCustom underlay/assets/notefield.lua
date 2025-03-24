@@ -79,6 +79,7 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
             if GAMESTATE:IsPlayerEnabled(PLAYER_1) and GAMESTATE:IsPlayerEnabled(PLAYER_2) then
                 self:x( SCREEN_CENTER_X + 150 * pnSide(pn) )
             end
+            self.lastchart = nil
         end,
 
         OnCommand=function(self)
@@ -98,8 +99,11 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
             end;
         end;
 
-        OptionsListOpenedMessageCommand=function(self)
-            self:ChangeReload( Global.pncursteps[pn] )
+        OptionsListOpenedMessageCommand=function(self,param)
+            if param.Player == pn and (Global.pncursteps[pn] ~= self.lastchart) then
+                self:ChangeReload( Global.pncursteps[pn] )
+                self.lastchart = Global.pncursteps[pn]
+            end
         end,
 
         RefreshCommand=function(self)
@@ -122,7 +126,10 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                     --     curskin[pn] = skin;
                     -- end;
 
-                    self:ChangeReload(steps, skin);
+                    if (steps ~= self.lastchart) then
+                        self:ChangeReload(steps)
+                        self.lastchart = steps
+                    end
                 end
 
                 local speed = prefs.speed_mod;

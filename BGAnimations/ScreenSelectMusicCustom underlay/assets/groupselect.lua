@@ -143,7 +143,7 @@ t[#t+1] = Def.Sprite{
 	OnCommand=cmd(playcommand,"ReloadGroups");
 	ReloadGroupsMessageCommand=function(self,param)
 
-		local index = Global.selection;
+		-- local index = Global.selection;
 		local img = nil;
 		
 		if Global.allgroups[Global.selection] then
@@ -334,6 +334,9 @@ end;
 				SongGroupMessageCommand=function(self)
 					-- local a = string.format("%0"..string.len(#Global.allgroups).."d",Global.selection);
 					-- local b = #Global.allgroups;
+					if not Global.selection or not Global.allgroups then return end
+					if not Global.allgroups[Global.selection] then return end
+
 					local curletter = ToUpper(string.sub(Global.allgroups[Global.selection]["Name"], 1, 1))
 					if self.lastletter ~= curletter then
 						self.lastletter = curletter
