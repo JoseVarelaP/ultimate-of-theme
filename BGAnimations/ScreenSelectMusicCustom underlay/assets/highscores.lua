@@ -241,7 +241,7 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
             -- title
             Def.BitmapText{
                 Font = "regen strong";
-                Text = string.upper("Top  Accuracy  Score");
+                Text = string.upper(THEME:GetString("Labels","TopAccuracyScore"));
                 InitCommand=cmd(x,-48*pnSide(pn);zoomy,0.31;zoomx,0.3075;horizalign,pnAlign(OtherPlayer[pn]);strokecolor,BoostColor(PlayerColor(pn,0.9),1/3);diffusealpha,0);
                 StateChangedMessageCommand=function(self)
                     self:stoptweening();

@@ -196,7 +196,7 @@ for num=0,radaritems do
                         self:x((-radaritems*iconspacing) + (num*iconspacing)-iconadjust);
                     end;
 
-                    self:settext(string.upper((num+1) <= #paneLabels and paneLabels[num+1] or ""));
+                    self:settext(string.upper((num+1) <= #paneLabels and THEME:GetString("Labels",paneLabels[num+1]) or ""));
                 end;
             };
 

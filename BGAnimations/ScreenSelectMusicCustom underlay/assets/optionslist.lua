@@ -56,7 +56,7 @@ local option_tree = {
             --ConfigRange(NOTESCONFIG, "hidden_offset", 0, 0, 0, 0), 
             --ConfigRange(NOTESCONFIG, "sudden_offset", 0, 0, 0, 0), 
             --ConfigRange(NOTESCONFIG, "fade_dist", 40, 0, 120, 5), 
-            ConfigBool(NOTESCONFIG, "glow_during_fade", true),
+            --ConfigBool(NOTESCONFIG, "glow_during_fade", true),
             {
                 Name = "Extras",
                 Options = {

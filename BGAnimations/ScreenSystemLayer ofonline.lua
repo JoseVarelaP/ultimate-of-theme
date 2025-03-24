@@ -24,9 +24,10 @@ for ind,plr in pairs(PlayerNumber) do
 			:zoom( base_zoom ):sleep(2):easeinexpo(0.5):diffusealpha(0)
 		end,
 		MessageOFNetworkResponseMessageCommand=function(self,params)
+			self:GetChild("ErrorIcon"):visible(false)
 			if params.PlayerNumber == plr then
 				local xPosSeparation = SAFE_WIDTH + 140
-				self:GetChild("ColorIcon"):setstate(0):diffuse(Color.White)
+				self:GetChild("ColorIcon"):setstate(0):visible(true)
 				self:x( plr == PLAYER_1 and xPosSeparation or SCREEN_WIDTH - xPosSeparation)
 				if params.Name == "ScoreSave" then
 					if params.Status == "success" then
@@ -35,7 +36,8 @@ for ind,plr in pairs(PlayerNumber) do
 						if params.Message == "TimeoutRetry" then
 							self:GetChild("Status"):settext( scoresavetimeout )
 						else 
-							self:GetChild("ColorIcon"):diffuse(Color.Red)
+							self:GetChild("ColorIcon"):visible(false)
+							self:GetChild("ErrorIcon"):visible(true)
 							self:GetChild("Status"):settext( errormessage:format(params.Message) )
 						end
 					end
@@ -90,10 +92,21 @@ for ind,plr in pairs(PlayerNumber) do
 			end
 		},
 
+		Def.Sprite{
+			Name="ErrorIcon",
+			Texture=THEME:GetPathG("","navigation"),
+			InitCommand=function (self)
+				self:diffuseshift():animate(0):setstate(5)
+				:effectcolor1(1,0.5,0.5,0.5)
+				:effectcolor2(1,0.5,0.5,1.0)
+				:zoom( frame_height )
+				:xy( -frame_width/2, -2 )
+			end
+		},
+
 		Def.BitmapText{
 			Font="corbel",
 			Name="Status",
-			Text="I am text being drawn! woahhhhhhhhhh",
 			InitCommand=function(self)
 				self:zoom(.6):xy(-98,-3):halign(0):maxwidth(380)
 			end

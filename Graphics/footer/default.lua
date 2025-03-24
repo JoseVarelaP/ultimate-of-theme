@@ -55,7 +55,7 @@ t[#t+1] = Def.BitmapText{
 				local name = PROFILEMAN:GetProfile(pn):GetDisplayName();
 				if name == "" then
 					self:diffusealpha(0.33);
-					self:settext("No Profile");
+					self:settext(THEME:GetString("Labels","NoProfile"));
 				else
 					self:diffusealpha(1);
 					self:settext(name);

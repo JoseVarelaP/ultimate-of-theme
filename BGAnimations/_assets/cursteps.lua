@@ -140,7 +140,7 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
 				RefreshCommand=function(self)
 					if Global.pncursteps[pn] then
 						local steps = Global.pncursteps[pn]
-						self:settext("Avg. notes/sec: "..AvgNotesSec(steps,pn));
+						self:settext(THEME:GetString("Labels","AvgNotesPerSec")..AvgNotesSec(steps,pn));
 						--self:settext("Total notes: "..TotalNotes(steps,pn));
 						--self:settext("Predicted meter: "..steps:PredictMeter());
 					end;
