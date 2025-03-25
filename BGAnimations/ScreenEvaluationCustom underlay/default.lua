@@ -1,5 +1,37 @@
+local actorframeToUse = nil
+local function CustomInput(event)
+    if event.type == "InputEventType_FirstPress" then
+        if event.PlayerNumber and SideJoined(event.PlayerNumber) and not Global.lockinput then
+            -- Ok, we have pressed the button once. Time to detect what button was pressed.
+            local data = {
+                Player = event.PlayerNumber,
+                Input = "Prev",
+            }
+            if event.GameButton == "MenuLeft" then
+                data.Input = "Prev"
+                EvaluationController(data)
+            end
+            if event.GameButton == "MenuRight" then
+                data.Input = "Next"
+                EvaluationController(data)
+            end
+            if event.GameButton == "Start" then
+                data.Input = "Start"
+                EvaluationController(data)
+            end
+        end
+    end
+end
+
+for i,pn in pairs( GAMESTATE:GetEnabledPlayers() ) do
+	SCREENMAN:set_input_redirected( pn, true )
+end
+
 local t = MenuInputActor()..{
-    InitCommand=function(self) Global.lockinput = true; end;
+    InitCommand=function(self)
+        actorframeToUse = self
+        Global.lockinput = true;
+    end;
     OnCommand=cmd(diffusealpha,1;sleep,2.5;queuecommand,"Unlock");
     OffCommand=cmd(linear,0.5;diffusealpha,0;sleep,0.75;queuecommand,"Exit");
     PlayerJoinedMessageCommand=function(self,param)
@@ -8,6 +40,9 @@ local t = MenuInputActor()..{
     MenuInputMessageCommand=function(self,param) 
         InputController(self,param) 
     end;
+    BeginCommand=function (self)
+        SCREENMAN:GetTopScreen():AddInputCallback( CustomInput )
+    end,
 }
 
 --//================================================================    

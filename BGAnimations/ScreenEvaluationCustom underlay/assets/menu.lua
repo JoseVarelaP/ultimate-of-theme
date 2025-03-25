@@ -3,6 +3,9 @@ local t = Def.ActorFrame{
     InitCommand=cmd(diffusealpha,0);
     UnlockMessageCommand=cmd(stoptweening;linear,0.2;diffusealpha,1);
     ExitCommand=function() 
+        for i,pn in pairs( GAMESTATE:GetEnabledPlayers() ) do
+            SCREENMAN:set_input_redirected( pn, false )
+        end
         SCREENMAN:SetNewScreen(nextscreen);
     end;
 }
@@ -22,7 +25,7 @@ local options = {
     {
         Name = "Retry",
         Action = function(param)
-            reset_needs_defective_field_for_all_players()
+            -- reset_needs_defective_field_for_all_players()
             MESSAGEMAN:Broadcast("FinalDecision");
             if IsRoutine() then
                 nextscreen = "ScreenGameplayShared";
