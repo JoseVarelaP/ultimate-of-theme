@@ -1,4 +1,3 @@
-local actorframeToUse = nil
 local function CustomInput(event)
     if event.type == "InputEventType_FirstPress" then
         if event.PlayerNumber and SideJoined(event.PlayerNumber) and not Global.lockinput then
@@ -29,7 +28,6 @@ end
 
 local t = MenuInputActor()..{
     InitCommand=function(self)
-        actorframeToUse = self
         Global.lockinput = true;
     end;
     OnCommand=cmd(diffusealpha,1;sleep,2.5;queuecommand,"Unlock");

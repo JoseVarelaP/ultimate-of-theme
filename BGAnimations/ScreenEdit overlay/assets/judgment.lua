@@ -9,11 +9,26 @@ local t = Def.ActorFrame {
 	end;
 };
 
-local notecount = 0;
-local hits = 0;
-local misses = 0;
-local all_dp = 0;
-local cur_dp = 0;
+local notecount = {
+	[PLAYER_1] = 0,
+	[PLAYER_2] = 0
+}
+local hits = {
+	[PLAYER_1] = 0,
+	[PLAYER_2] = 0
+}
+local misses = {
+	[PLAYER_1] = 0,
+	[PLAYER_2] = 0
+}
+local all_dp = {
+	[PLAYER_1] = 0,
+	[PLAYER_2] = 0
+}
+local cur_dp = {
+	[PLAYER_1] = 0,
+	[PLAYER_2] = 0
+}
 
 local song = GAMESTATE:GetCurrentSong();
 local oldbeat = 0;
@@ -38,7 +53,7 @@ local HNS_weights = {
 	["HoldNoteScore_LetGo"] = THEME:GetMetric("ScoreKeeperNormal", "PercentScoreWeightLetGo"),
 };
 
-local function TNSToCombo(tns)
+local function TNSToCombo(tns,plr)
 	local multiplier = { 1, 1 };
 	local curbeat = GAMESTATE:GetSongBeat();
 	local master = GAMESTATE:GetMasterPlayerNumber();
@@ -61,19 +76,19 @@ local function TNSToCombo(tns)
 	end;
 
 	if tns == "TapNoteScore_Miss" or tns == "TapNoteScore_CheckpointMiss" then
-		misses = misses + multiplier[2];
-		hits = 0;
+		misses[plr] = misses[plr] + multiplier[2];
+		hits[plr] = 0;
 	elseif tns == "TapNoteScore_W5" then
-		misses = 0;
-		hits = 0;
+		misses[plr] = 0;
+		hits[plr] = 0;
 	elseif tns == ComboMaintain() then
-		hits = 0;
+		hits[plr] = 0;
 	elseif tns == ComboContinue() then
-		hits = hits + multiplier[1];
-		misses = 0;
+		hits[plr] = hits[plr] + multiplier[1];
+		misses[plr] = 0;
 	else
-		hits = hits + multiplier[1];
-		misses = 0;
+		hits[plr] = hits[plr] + multiplier[1];
+		misses[plr] = 0;
 	end;
 end;
 
@@ -83,11 +98,13 @@ local function ValueOrNil(val)
 end;
 
 local function ResetTrackers()
-	notecount = 0;
-	hits = 0;
-	misses = 0;
-	all_dp = 0;
-	cur_dp = 0;
+	for pn in ivalues(PlayerNumber) do
+		notecount[pn] = 0;
+		hits[pn] = 0;
+		misses[pn] = 0;
+		all_dp[pn] = 0;
+		cur_dp[pn] = 0;
+	end
 	oldbeat = GAMESTATE:GetSongBeat();
 end;
 
@@ -105,13 +122,18 @@ t[#t+1] = Def.BitmapText{
 			self:visible(false);
 		end;
 
-		self:settext("Notes judged: "..notecount);
+		--self:settext("Notes judged: "..notecount[]);
 		
 	end;
 
 	JudgmentMessageCommand=function(self, param)
-		if param.TapNoteScore and param.TapNoteScore ~= "TapNoteScore_None" then 
-			notecount = notecount + 1; 
+		local pn = param.Player
+		if param.TapNoteScore and (
+				param.TapNoteScore ~= "TapNoteScore_None" and
+				param.TapNoteScore ~= "TapNoteScore_AvoidMine" and
+				param.TapNoteScore ~= "TapNoteScore_HitMine") then
+			
+			notecount[pn] = notecount[pn] + 1; 
 
 			local maximum_value;
 			if(PREFSMAN:GetPreference("AllowW1") == "AllowW1_Never") then
@@ -120,29 +142,29 @@ t[#t+1] = Def.BitmapText{
 				maximum_value = TNS_weights["TapNoteScore_W1"];
 			end;
 
-			all_dp = all_dp + maximum_value;
-			cur_dp = cur_dp + TNS_weights[param.TapNoteScore];
+			all_dp[pn] = all_dp[pn] + maximum_value;
+			cur_dp[pn] = cur_dp[pn] + TNS_weights[param.TapNoteScore];
 
-			TNSToCombo(param.TapNoteScore);
+			TNSToCombo(param.TapNoteScore,pn);
 		end
 
 		if param.HoldNoteScore and param.HoldNoteScore ~= "HoldNoteScore_None" then 
-			notecount = notecount - 1; 
-			all_dp = all_dp + HNS_weights["HoldNoteScore_Held"];
-			cur_dp = cur_dp + HNS_weights[param.HoldNoteScore];
-		end;	
+			notecount[pn] = notecount[pn] - 1; 
+			all_dp[pn] = all_dp[pn] + HNS_weights["HoldNoteScore_Held"];
+			cur_dp[pn] = cur_dp[pn] + HNS_weights[param.HoldNoteScore];
+		end
 
-		self:settext("Notes judged: "..notecount);
+		self:settext("Notes judged: "..notecount[pn]);
 
 		local comboparams = { 
-			Combo = ValueOrNil(hits),
-			Misses = ValueOrNil(misses),
-			Player = GAMESTATE:GetMasterPlayerNumber(), 
-			currentDP = cur_dp, 
-			possibleDP = all_dp 
+			Combo = ValueOrNil(hits[pn]),
+			Misses = ValueOrNil(misses[pn]),
+			Player = pn, 
+			currentDP = cur_dp[pn], 
+			possibleDP = all_dp[pn] 
 		};
 
-		local comboActor = SCREENMAN:GetTopScreen():GetChild("Player"):GetChild("Combo");
+		local comboActor = SCREENMAN:GetTopScreen():GetChild("Player"..ToEnumShortString(pn)):GetChild("Combo");
 		comboActor:playcommand("Judgment", param);
 		comboActor:playcommand("Combo", comboparams );
 	end;
