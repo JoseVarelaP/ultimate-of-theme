@@ -12,14 +12,103 @@ create_lua_config = setmetatable({
         Load the configuration from the specific player slot.
     ]]
     load = function(this, playerSlot)
-        if playerSlot == "ProfileSlot_Invalid" then
-            -- It's machine profile configs.
-            return this.dataCont["ProfileSlot_Machine"]
+        -- if playerSlot == "ProfileSlot_Invalid" then
+        --     -- It's machine profile configs.
+        --     return this.dataCont["ProfileSlot_Machine"]
+        -- end
+        -- return this.dataCont[playerSlot]
+
+        -- Get locations first.
+        local locationProf = ""
+        local pSlotToSearch = "ProfileSlot_Machine"
+        local rawSlot = "ProfileSlot_Machine"
+        if playerSlot ~= "ProfileSlot_Invalid" then
+            pSlotToSearch = "ProfileSlot_Player".. playerSlot:sub(-1)
+            rawSlot = playerSlot
         end
-        return this.dataCont[playerSlot]
+        locationProf = PROFILEMAN:GetProfileDir(pSlotToSearch)
+
+        if locationProf == "" then
+            --lua.ReportScriptError(("[%s]: Load failed, Profile dir not found."):format(this.file))
+            return false
+        end
+
+        local fileLoc = locationProf ..  this.file
+        if not FILEMAN:DoesFileExist(fileLoc) then
+            return false
+        end
+	
+        local Container = {}
+
+        local configfile = RageFileUtil.CreateRageFile()
+        configfile:Open(fileLoc, 1)
+
+        local configcontent = configfile:Read()
+
+        configfile:Close()
+        configfile:destroy()
+
+        local Caty = true
+
+        --lua.ReportScriptError(("[%s]: Loading..."):format(fileLoc))
+        for line in string.gmatch(configcontent.."\n", "(.-)\n") do	
+            for Con in string.gmatch(line, "%[(.-)%]") do
+                if Con == Cat or Cat == nil then Caty = true else Caty = false end
+            end	
+            for KeyVal, Val in string.gmatch(line, "(.-)=(.+)") do
+                if Val == "true" then
+                    this.dataCont[rawSlot][KeyVal] = true
+                elseif Val == "false" then
+                    this.dataCont[rawSlot][KeyVal] = false
+                elseif tonumber(Val) then
+                    this.dataCont[rawSlot][KeyVal] = tonumber(Val)
+                else
+                    this.dataCont[rawSlot][KeyVal] = tostring(Val)
+                end
+            end	
+        end
     end,
     save = function(this, playerSlot)
-        return this
+        -- Get locations first.
+        local locationProf = ""
+        local pSlotToSearch = "ProfileSlot_Machine"
+        local rawSlot = "ProfileSlot_Machine"
+        if playerSlot ~= "ProfileSlot_Invalid" then
+            pSlotToSearch = "ProfileSlot_Player".. playerSlot:sub(-1)
+            rawslot = playerSlot
+        end
+        locationProf = PROFILEMAN:GetProfileDir(pSlotToSearch)
+
+        if locationProf == "" then
+            --lua.ReportScriptError(("[%s]: Save failed, Profile dir not found."):format(this.file))
+            return
+        end
+
+        -- Now perform the save.
+        local fileLoc = locationProf ..  this.file
+        if not FILEMAN:DoesFileExist(fileLoc) then 
+            local Createfile = RageFileUtil.CreateRageFile()
+            Createfile:Open(fileLoc, 2)
+            Createfile:Write("")
+            Createfile:Close()
+            Createfile:destroy()
+        end
+
+        --lua.ReportScriptError(("[%s]: Saving %s..."):format(fileLoc, rawslot))
+    
+        local Container = this:get_data(playerSlot)
+        --lua.ReportScriptError( tostring(this:get_data(playerSlot).ShowJudgmentList) )
+        local output = ""
+        
+        local configfile = RageFileUtil.CreateRageFile()
+        for k,v in pairs(Container) do
+            output = output..k.."="..tostring(v).."\n"
+        end	
+        
+        configfile:Open(fileLoc, 2)
+        configfile:Write(output)
+        configfile:Close()
+        configfile:destroy()
     end,
     set_dirty = function(this, state)
         this.dirty = state
@@ -27,8 +116,8 @@ create_lua_config = setmetatable({
     end,
     ------
     dataCont = {
-        ["PlayerNumber_P1"] = {},
-        ["PlayerNumber_P2"] = {},
+        [PLAYER_1] = {},
+        [PLAYER_2] = {},
         ["ProfileSlot_Machine"] = {}
     },
     name = "",
@@ -68,13 +157,9 @@ local theme_conf_default = {
 
 THEMECONFIG = create_lua_config{
     name = "THEMECONFIG", 
-    file = "theme_config.lua",
+    file = "ultimate_theme_config.ini",
     default = theme_conf_default,
 }
-
-THEMECONFIG:load("ProfileSlot_Invalid");
-THEMECONFIG:set_dirty("ProfileSlot_Invalid");
-THEMECONFIG:save("ProfileSlot_Invalid");
 
 --//================================================================
 
@@ -223,7 +308,7 @@ notefield_prefs_config= create_lua_config{
 NOTESCONFIG = notefield_prefs_config;
 PLAYERCONFIG = create_lua_config{
     name = "PLAYERCONFIG", 
-    file = "player_config.lua",
+    file = "ultimate_player_config.ini",
     default = player_conf_default,
 }
 

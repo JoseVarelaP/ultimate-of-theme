@@ -28,6 +28,9 @@ t[#t+1] = Def.ActorFrame{
     end;
 
     ExitCommand=function() 
+        THEMECONFIG:load("ProfileSlot_Invalid");
+        THEMECONFIG:save("ProfileSlot_Invalid");
+
         SCREENMAN:SetNewScreen(ToTitleMenu()); 
     end;
 

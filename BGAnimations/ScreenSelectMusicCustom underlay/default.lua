@@ -6,7 +6,15 @@ local t = MenuInputActor()..{
 	end;
 
 	OnCommand=cmd(sleep,1;queuecommand,"Unlock");
-    OffCommand=cmd(linear,0.5;diffusealpha,0;sleep,0.75;queuecommand,"Exit");
+    FinalDecisionMessageCommand=function(self)
+
+		for pn in ivalues(GAMESTATE:GetEnabledPlayers()) do
+			PLAYERCONFIG:save(pn);
+		end
+
+		self:linear(0.5):diffusealpha(0)
+		:sleep(0.75):queuecommand("Exit")
+	end,
 
 	PlayerJoinedMessageCommand=function() 
 		GAMESTATE:SetCurrentStyle("versus");

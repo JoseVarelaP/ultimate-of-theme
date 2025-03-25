@@ -8,6 +8,11 @@ local t = Def.ActorFrame{
         end
         SCREENMAN:SetNewScreen(nextscreen);
     end;
+    OffCommand=function(self)
+        for i,pn in pairs( GAMESTATE:GetEnabledPlayers() ) do
+            SCREENMAN:set_input_redirected( pn, false )
+        end
+    end,
 }
 
 local originY = SCREEN_CENTER_Y + 160;
@@ -116,7 +121,7 @@ for i=1,#options do
 
         Def.BitmapText{
             Font = Fonts.eval["Menu"];
-            Text = string.upper(options[i].Name);
+            Text = string.upper(THEME:GetString("ScreenEvaluation",options[i].Name));
             InitCommand=cmd(diffuse,HighlightColor();strokecolor,BoostColor(HighlightColor(),0.3));
             OnCommand=cmd(textglowmode,'TextGlowMode_Inner');
             GainFocusCommand=cmd(stoptweening;linear,0.1;zoom,0.45;diffuseshift;effectcolor1,1,1,1,1;effectcolor2,BoostColor(HighlightColor(),2);effectperiod,0.5);
