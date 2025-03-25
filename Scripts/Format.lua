@@ -56,7 +56,9 @@ end;
 
 function PureType(steps)
     if steps then
-        return string.gsub(ToEnumShortString(steps:GetStepsType()),Game().."_","");
+        local gm = Game()
+        if gm == "Groove" then gm = "Dance" end
+        return string.gsub(ToEnumShortString(steps:GetStepsType()),gm.."_","");
     else
         return nil;
     end;

@@ -262,7 +262,13 @@ function EligibleSteps(steps)
     local st = steps:GetStepsType();
     local sides = GAMESTATE:GetNumSidesJoined();
 
-    if not string.find(st, Game()) then return false end;
+    local gm = Game()
+
+    if IsGame("Groove") then
+        gm = "Dance"
+    end
+
+    if not string.find(st, gm) then return false end;
 
     local pads_required = {
         ["StepsType_Dance_Double"]      = 2,
