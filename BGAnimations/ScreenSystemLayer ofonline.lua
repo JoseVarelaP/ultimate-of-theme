@@ -13,11 +13,11 @@ local frame_width = 240;
 local frame_height = 0.6;
 local base_zoom = 0.75 * (SCREEN_HEIGHT/480)
 
+local xPosSeparation = 190
 for ind,plr in pairs(PlayerNumber) do
 	t[#t+1] = Def.ActorFrame{
 		InitCommand=function(self)
-			local xPosSeparation = SAFE_WIDTH + 140
-			self:xy( plr == PLAYER_1 and xPosSeparation or SCREEN_WIDTH - xPosSeparation , SCREEN_BOTTOM - 40 )
+			self:xy( SCREEN_CENTER_X + (plr == PLAYER_1 and -xPosSeparation or xPosSeparation) , SCREEN_BOTTOM - 40 )
 			:zoom(base_zoom):diffusealpha(0)
 		end,
 		ActionPlayCommand=function(self)
@@ -25,11 +25,10 @@ for ind,plr in pairs(PlayerNumber) do
 			:zoom( base_zoom ):sleep(2):easeinexpo(0.5):diffusealpha(0)
 		end,
 		MessageOFNetworkResponseMessageCommand=function(self,params)
-			self:GetChild("ErrorIcon"):visible(false)
 			if params.PlayerNumber == plr then
-				local xPosSeparation = SAFE_WIDTH + 140
 				self:GetChild("ColorIcon"):setstate(0):visible(true)
-				self:x( plr == PLAYER_1 and xPosSeparation or SCREEN_WIDTH - xPosSeparation)
+				self:GetChild("ErrorIcon"):visible(false)
+				self:x( SCREEN_CENTER_X + (plr == PLAYER_1 and -xPosSeparation or xPosSeparation) )
 				if params.Name == "ScoreSave" then
 					if params.Status == "success" then
 						self:GetChild("Status"):settext(scoresubmitted)
@@ -48,6 +47,8 @@ for ind,plr in pairs(PlayerNumber) do
 					self:GetChild("Status"):settext( params.StatusCode == 500 and profilefailSync or profilesynced )
 					self:playcommand("ActionPlay")
 				end
+				frame_width = math.max(self:GetChild("Status"):GetZoomedWidth(), 200)
+				self:playcommand("UpdateSize")
 			end
 			if params.Name == "MachineLogin" then
 				self:x(SCREEN_CENTER_X)
@@ -55,6 +56,20 @@ for ind,plr in pairs(PlayerNumber) do
 				self:GetChild("ColorIcon"):visible( loginsucceed )
 				self:GetChild("ErrorIcon"):visible( not loginsucceed )
 				self:GetChild("Status"):settext( loginsucceed and connectedtoserver or failconnectserver)
+				frame_width = math.max(self:GetChild("Status"):GetZoomedWidth(), 230)
+				self:playcommand("UpdateSize")
+				self:playcommand("ActionPlay")
+			end
+
+			-- Text on AccountLink is already translated on the engine, so you'll be fine just passing the parameters.
+			if params.Name == "AccountLink" then
+				self:x(SCREEN_CENTER_X)
+				local waslinked = params.StatusCode == 200
+				self:GetChild("ColorIcon"):visible( waslinked )
+				self:GetChild("ErrorIcon"):visible( not waslinked )
+				self:GetChild("Status"):settext( params.Message )
+				frame_width = self:GetChild("Status"):GetZoomedWidth()
+				self:playcommand("UpdateSize")
 				self:playcommand("ActionPlay")
 			end
 		end,
@@ -63,6 +78,9 @@ for ind,plr in pairs(PlayerNumber) do
 			Texture=THEME:GetPathG("","titlepanel"),
 			InitCommand=function (self)
 				self:animate(0):setstate(1)
+				self:zoomto(frame_width,frame_height*self:GetHeight())
+			end,
+			UpdateSizeCommand=function (self)
 				self:zoomto(frame_width,frame_height*self:GetHeight())
 			end
 		},
@@ -73,6 +91,9 @@ for ind,plr in pairs(PlayerNumber) do
 				self:animate(0):setstate(0):halign(1)
 				:zoom(frame_height)
 				:x(-frame_width/2)
+			end,
+			UpdateSizeCommand=function (self)
+				self:x(-frame_width/2)
 			end
 		},
 
@@ -82,6 +103,9 @@ for ind,plr in pairs(PlayerNumber) do
 				self:animate(0):setstate(2):halign(0)
 				:zoom(frame_height)
 				:x(frame_width/2)
+			end,
+			UpdateSizeCommand=function (self)
+				self:x(frame_width/2)
 			end
 		},
 
@@ -93,6 +117,9 @@ for ind,plr in pairs(PlayerNumber) do
 				:effectcolor1(1,1,1,0.5)
 				:zoom( frame_height - .2 )
 				:xy( -frame_width/2, -2 )
+			end,
+			UpdateSizeCommand=function (self)
+				self:x(-(frame_width/2) - 8)
 			end
 		},
 
@@ -105,6 +132,9 @@ for ind,plr in pairs(PlayerNumber) do
 				:effectcolor2(1,0.5,0.5,1.0)
 				:zoom( frame_height )
 				:xy( -frame_width/2, -2 )
+			end,
+			UpdateSizeCommand=function (self)
+				self:x(-(frame_width/2) - 6)
 			end
 		},
 
@@ -112,7 +142,10 @@ for ind,plr in pairs(PlayerNumber) do
 			Font="corbel",
 			Name="Status",
 			InitCommand=function(self)
-				self:zoom(.6):xy(-98,-3):halign(0):maxwidth(380)
+				self:zoom(.6):xy(-98,-3):halign(0)
+			end,
+			UpdateSizeCommand=function (self)
+				self:x(-frame_width/2 + 10)
 			end
 		}
 	}
