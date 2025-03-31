@@ -1,7 +1,9 @@
 local t = Def.ActorFrame{}
 
 t[#t+1] = Def.Quad{
-	InitCommand=cmd(diffuse,1,1,1,1;FullScreen);
-};
+	OnCommand=function(self)
+		self:diffuse(Color.White):FullScreen()
+	end
+}
 
 return t
