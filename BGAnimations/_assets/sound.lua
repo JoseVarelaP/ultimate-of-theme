@@ -61,7 +61,9 @@ t[#t+1] = Def.Actor{
 	end; 
 };
 	
-t[#t+1] = LoadActor(THEME:GetPathS("","Difficulty"))..{
+t[#t+1] = Def.Sound{
+	File=THEME:GetPathS("","Difficulty"),
+	Precache=true,
 	StepsChangedMessageCommand=function(self, param) 
 		if Global.state == "SelectSteps" then 
 			if param and param.Player then 
@@ -71,7 +73,9 @@ t[#t+1] = LoadActor(THEME:GetPathS("","Difficulty"))..{
 	end;
 };	
 	
-t[#t+1] = LoadActor(THEME:GetPathS("","Confirm"))..{
+t[#t+1] = Def.Sound{
+	File=THEME:GetPathS("","Confirm"),
+	Precache=true,
 	FinalDecisionMessageCommand=function(self)
 		local scr = SCREENMAN:GetTopScreen()
 		if scr and scr:IsTransitioning() then return end;

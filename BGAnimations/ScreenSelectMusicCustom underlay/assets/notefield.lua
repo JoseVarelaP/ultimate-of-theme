@@ -80,6 +80,7 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                 self:x( SCREEN_CENTER_X + 150 * pnSide(pn) )
             end
             self.lastchart = nil
+            self.laststyle = nil
         end,
 
         OnCommand=function(self)
@@ -126,8 +127,35 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                     --     curskin[pn] = skin;
                     -- end;
 
+                    local style = steps:GetChartType()
                     if (steps ~= self.lastchart) then
-                        self:ChangeReload(steps)
+
+                        local reloadMade = false;
+                        if (style and self.laststyle ~= style) or self:IsGenerated() then
+                            self.laststyle = style
+        
+                            if not GAMESTATE:IsPlayerEnabled(pn) then return end
+                            self:ChangeReload( steps )
+                            if GAMESTATE:GetNumPlayersEnabled() == 2 then
+                                -- XXX: Versus should not apply here!
+                                -- GAMESTATE:SetCurrentStyle( "versus" )
+                            else
+                                GAMESTATE:SetCurrentStyle( ToEnumShortString(ToEnumShortString(style)) )
+                            end
+                            
+                            reloadMade = true
+                        end
+
+                        if not reloadMade then
+                            -- Get chart data
+                            local chartint = 1
+                            for k,v in ipairs( Global.song:GetAllSteps() ) do
+                                if v == steps then chartint = k break end
+                            end
+                
+                            GAMESTATE:SetCurrentSteps( pn, steps )
+                            self:SetNoteDataFromLua( Global.song:GetNoteData( chartint ) )
+                        end
                         self.lastchart = steps
                     end
                 end
