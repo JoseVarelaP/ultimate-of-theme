@@ -121,6 +121,7 @@ local sub_sections = {
     { Label = "Accuracy",       Key = "Percent",        Enabled = true },
     { Label = "Your Best",      Key = "PersonalBest",   Enabled = true },
     { Label = "Machine Best",   Key = "MachineBest",    Enabled = true },
+    { Label = "Online Best",    Key = "OnlineBest",     Enabled = true, FixPos = 3 },
 };
 
 if(PREFSMAN:GetPreference("AllowW1") == "AllowW1_Never") then
@@ -227,10 +228,39 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
     end;
 
     -- sub data
+    local isOnlineRightNow = false
     for n=1,#sub_sections do
         subdata[#subdata+1] = Def.ActorFrame{
-            InitCommand=cmd(y,108 + (n-1) * subspacing;x,SCREEN_CENTER_X + (210*pnSide(pn));visible,SideJoined(pn);addy,sub_sections[n].Key == "Percent" and -2 or 0);
-            OnCommand=cmd(diffusealpha,0;sleep,1 + (n/10);linear,0.3;diffusealpha,1);
+            InitCommand=function(self)
+                self:y(108 + (n-1) * subspacing)
+                :x(SCREEN_CENTER_X + (210*pnSide(pn))):visible(SideJoined(pn)):addy(sub_sections[n].Key == "Percent" and -2 or 0)
+
+                if sub_sections[n].FixPos then
+                    self:y( 108 + (sub_sections[n].FixPos-1) * subspacing )
+                end
+            end,
+            OnCommand=function(self)
+                self:diffusealpha(0):sleep(1 + (n/10)):linear(0.3):diffusealpha(1)
+
+                if NETMAN:IsConnectionEstablished() then
+                    -- We need to cycle through the machine and online score.
+                    self:playcommand("CycleMachineRecords")
+                end
+            end,
+
+            CycleMachineRecordsCommand=function (self)
+                if sub_sections[n].Key == "OnlineBest" or sub_sections[n].Key == "MachineBest" then
+                    self:decelerate(0.5)
+                    if sub_sections[n].Key == "OnlineBest" then
+                        self:diffusealpha( isOnlineRightNow and 1 or 0 )
+                    end
+                    if sub_sections[n].Key == "MachineBest" then
+                        isOnlineRightNow = not isOnlineRightNow
+                        self:diffusealpha( isOnlineRightNow and 0 or 1 )
+                    end
+                    self:sleep(1):queuecommand("CycleMachineRecords")
+                end
+            end,
 
             Def.BitmapText{
                 Font = Fonts.eval["Labels"];
@@ -278,6 +308,32 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                         end;
 
                     end;
+
+                    if sub_sections[n].Key == "OnlineBest" then
+                        NETMAN:FuncHighScoresForChart{
+                            ChartKey = Global.pncursteps[pn]:GetChartKey(),
+                            Timing = "Original",
+                            Rate = GAMESTATE:GetSongOptionsObject("ModsLevel_Preferred"):MusicRate(),
+                            PlayerNumber = pn,
+                            OnResponse = function (data)
+                                if not data.response.scores or #data.response.scores == 0 then
+                                    return
+                                end
+        
+                                -- Global.onlinescore[pn] = data.response.scores
+                                MESSAGEMAN:Broadcast("OnlineScoreUpdated")
+
+                                if data.response.scores[1] then
+                                    self:settext( FormatPercentScore(data.response.scores[1].score) )
+                                    self:diffuse(PlayerColor(pn));
+                                    self:strokecolor(BoostColor(PlayerColor(pn),0.25));
+                                end
+                            end,
+                            OnFail = function ()
+                                lua.ReportScriptError"woah af alil"
+                            end
+                        }
+                    end
                 end;
             }
         }
@@ -433,9 +489,5 @@ t[#t+1] = Def.Quad{
     InitCommand=cmd(zoomto,SCREEN_WIDTH-64,1;diffuse,1,1,1,0.2;x,SCREEN_CENTER_X;y,321;cropleft,0.5;cropright,0.5);
     OnCommand=cmd(sleep,0.25;decelerate,0.5;;cropleft,0;cropright,0);
 }
-
-
-
-
 
 return t;
