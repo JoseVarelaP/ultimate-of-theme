@@ -1,6 +1,10 @@
 local boxsize = 100;
 local t = Def.ActorFrame{};
 
+for pn in ivalues(PlayerNumber) do
+	PLAYERCONFIG:load_defaults(pn);
+end
+
 t[#t+1] = Def.ActorFrame{
 	InitCommand=cmd(CenterX;y,SCREEN_CENTER_Y+20);
 

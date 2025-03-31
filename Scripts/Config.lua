@@ -29,7 +29,6 @@ create_lua_config = setmetatable({
         locationProf = PROFILEMAN:GetProfileDir(pSlotToSearch)
 
         if locationProf == "" then
-            --lua.ReportScriptError(("[%s]: Load failed, Profile dir not found."):format(this.file))
             return false
         end
 
@@ -114,6 +113,11 @@ create_lua_config = setmetatable({
         this.dirty = state
         return this
     end,
+    load_defaults = function(this, plr)
+        for setting,value in pairs( this.defaults ) do
+            this.dataCont[plr][setting] = value
+        end
+    end,
     ------
     dataCont = {
         [PLAYER_1] = {},
@@ -127,6 +131,7 @@ create_lua_config = setmetatable({
         if data.name then self.name = data.name end
         if data.file then self.file = data.file end
         if data.default then
+            self.defaults = data.default
             for setting,value in pairs( data.default ) do
                 for player in ivalues(PlayerNumber) do
                     self.dataCont[player][setting] = value

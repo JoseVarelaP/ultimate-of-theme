@@ -245,3 +245,14 @@ function PropertyActor()
         end;
     };
 end;
+
+-- Hook called during profile load
+function LoadProfileCustom(profile, dir)
+	-- Request the profile from the dir.
+	for i = 1, NUM_PLAYERS do
+		if profile == PROFILEMAN:GetProfile(PlayerNumber[i]) then
+			PLAYERCONFIG:load(PlayerNumber[i]);
+			break
+		end
+	end
+end
