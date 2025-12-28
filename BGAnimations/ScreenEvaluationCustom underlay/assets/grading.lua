@@ -330,7 +330,7 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                                 end
                             end,
                             OnFail = function ()
-                                lua.ReportScriptError"woah af alil"
+                                
                             end
                         }
                     end

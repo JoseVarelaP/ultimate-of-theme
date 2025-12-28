@@ -13,12 +13,12 @@ t[#t+1] = Def.Actor{
 		end;
 	end;
 
-	OffCommand=function(self) MESSAGEMAN:Broadcast("Volume", { volume = 0 }); end;
+	-- OffCommand=function(self) MESSAGEMAN:Broadcast("Volume", { volume = 0 }); end;
 
 	MusicWheelMessageCommand=function(self)
 		self:stoptweening(); 
-		self:playcommand("Volume", { volume = 1 });
-		SOUND:PlayMusicPart(THEME:GetPathS("","_missing"),0.1,0.1);
+		-- self:playcommand("Volume", { volume = 1 });
+		SOUND:StopMusic()
 		self:sleep(0.535); 
 		self:queuecommand("PreviewStart");
 	end;
@@ -30,35 +30,22 @@ t[#t+1] = Def.Actor{
 		if music then
 			start = Global.song:GetSampleStart()
 			length = Global.song:GetSampleLength()
-			SOUND:PlayMusicPart(music,start,length,1,1,true); 
-			self:sleep(length - 1.25);
+			SOUND:PlayMusicPart(music,start,length,0,0,true,true,false); 
 		end;
-			self:queuecommand("Volume") -- zero volume
 		MESSAGEMAN:Broadcast("Preview");
 	end; 
 
 	FinalDecisionMessageCommand=function(self) 
-		for i=1,100 do
-			self:finishtweening();
-			MESSAGEMAN:Broadcast("Volume", { volume = 1-(i/100) }); 
-			self:sleep(0.01);
-		end;
+		SOUND:Volume(0, 1)
 	end;
 
 	StateChangedMessageCommand=function(self)
 		if Global.state == "GroupSelect" then
-			MESSAGEMAN:Broadcast("Volume", { volume = _volume, global = 0.5 }); 
+			SOUND:Volume(0.25,0.25)
 		else
-			MESSAGEMAN:Broadcast("Volume", { volume = _volume, global = 1.0 }); 
+			SOUND:Volume(1,0.25)
 		end;
 	end;
-
-	VolumeMessageCommand=function(self,param)
-		local _duration = math.huge;
-		if param and param.volume then _volume = param.volume; else _volume = 0; end;
-		if param and param.global then Global.volume = param.global end;
-		SOUND:DimMusic(_volume * Global.volume, _duration);
-	end; 
 };
 	
 t[#t+1] = Def.Sound{

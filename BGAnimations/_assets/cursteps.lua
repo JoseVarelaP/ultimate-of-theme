@@ -47,6 +47,9 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
 	t[#t+1] = Def.ActorFrame{
 		InitCommand=cmd(x,SCREEN_CENTER_X + spacing * pnSide(pn);y,originY);
 		OnCommand=cmd(stoptweening;diffusealpha,0;sleep,0.5;linear,0.5;diffusealpha,1;visible,SideJoined(pn));
+		CancelCommand=function(self)
+        	self:stoptweening():linear(0.2):diffusealpha(0)
+    	end,
 		StateChangedMessageCommand=function(self)
 			self:stoptweening();
 			self:decelerate(0.2);

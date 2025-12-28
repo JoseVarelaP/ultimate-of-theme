@@ -104,7 +104,9 @@ t[#t+1] = Def.Actor{
 
 t[#t+1] = LoadActor(THEME:GetPathG("","bg"))..{
 	InitCommand=cmd(Center;diffuse,Global.bgcolor;diffusealpha,0);
-	FinalDecisionMessageCommand=cmd(diffusealpha,0;sleep,0.1;linear,0.5;diffusealpha,1);
+	FinalDecisionMessageCommand=function(self)
+		self:diffusealpha(0):sleep(0.1):linear(0.5):diffusealpha(1)
+	end
 };
 
 

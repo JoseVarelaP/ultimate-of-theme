@@ -76,7 +76,8 @@ function MainController(self,param)
 	if param.Input == "Return" and Global.level == 1 then 
 		if not Global.oplist[param.Player] then
 			Global.blockjoin = false;
-			SCREENMAN:SetNewScreen(SCREENMAN:GetTopScreen():GetPrevScreenName()); 
+			SCREENMAN:GetTopScreen():Cancel()
+			SOUND:Volume(0, 0.5)
 		else
 			OptionsListController(self,param);
 		end;

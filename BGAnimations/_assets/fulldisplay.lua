@@ -20,6 +20,10 @@ t[#t+1] = Def.Sprite{
 
 	OffCommand=cmd(stoptweening;linear,0.5;diffuse,1,1,1,0);
 
+	CancelCommand=function(self)
+        self:stoptweening():linear(0.5):diffusealpha(0)
+    end,
+
 	MusicWheelMessageCommand=function(self)
 		self:stoptweening();
 		self:linear(0.2);

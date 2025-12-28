@@ -212,6 +212,17 @@ for i=1,maxitems do
 				end;
 			end;
 
+			CancelCommand=function(self)
+				local dist = math.abs((self:GetX()-SCREEN_CENTER_X)/3000);
+				self:zoomx(01);
+				self:diffusealpha(1);
+				self:visible(true);
+				self:sleep(0.15);
+				self:decelerate(0.1+dist);
+				self:diffusealpha(0);
+				self:zoomx(0);
+			end;
+
             StateChangedMessageCommand=cmd(queuecommand,"Tween");
 			TweenMessageCommand=function(self,param)
 				self:stoptweening();

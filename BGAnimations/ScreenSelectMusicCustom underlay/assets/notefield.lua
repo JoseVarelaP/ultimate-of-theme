@@ -33,7 +33,7 @@ local t = Def.ActorFrame{
             self:diffusealpha(0);
         end;
     end;
-} 
+}
 
 local tex = Def.ActorFrameTexture{
     InitCommand= function(self)
@@ -45,7 +45,7 @@ local tex = Def.ActorFrameTexture{
     end;
 }
 
--- <Kyzentun> Luizsan: Yeah, it's touchy about the order.  I tried to make it less 
+-- <Kyzentun> Luizsan: Yeah, it's touchy about the order.  I tried to make it less
 -- touchy in the notefield_targets branch, but good luck finding someone to build that.
 for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
 
@@ -133,16 +133,17 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                         local reloadMade = false;
                         if (style and self.laststyle ~= style) or self:IsGenerated() then
                             self.laststyle = style
-        
+
                             if not GAMESTATE:IsPlayerEnabled(pn) then return end
-                            self:ChangeReload( steps )
                             if GAMESTATE:GetNumPlayersEnabled() == 2 then
                                 -- XXX: Versus should not apply here!
                                 -- GAMESTATE:SetCurrentStyle( "versus" )
                             else
                                 GAMESTATE:SetCurrentStyle( ToEnumShortString(ToEnumShortString(style)) )
                             end
-                            
+
+                            self:ChangeReload( steps )
+
                             reloadMade = true
                         end
 
@@ -152,7 +153,7 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                             for k,v in ipairs( Global.song:GetAllSteps() ) do
                                 if v == steps then chartint = k break end
                             end
-                
+
                             GAMESTATE:SetCurrentSteps( pn, steps )
                             self:SetNoteDataFromLua( Global.song:GetNoteData( chartint ) )
                         end
@@ -172,7 +173,7 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
 
                 local style = NOTESCONFIG:get_data(pn).speed_type
                 local speed = NOTESCONFIG:get_data(pn).speed_mod
-                
+
                 if style == "multiple" then
                     playeroptions:XMod(speed/100)
                 elseif style == "average" then
@@ -207,12 +208,12 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                 --[[
                 if (st == "Double" or st == "Routine") or GAMESTATE:GetNumSidesJoined() == 1 then
                     self:set_base_values{
-                        transform_pos_x = _screen.cx, 
+                        transform_pos_x = _screen.cx,
                         transform_pos_y = _screen.cy,
                     }
                 else
                     self:set_base_values{
-                        transform_pos_x = _screen.cx + (self:get_width() + 32) * 0.5 * pnSide(pn), 
+                        transform_pos_x = _screen.cx + (self:get_width() + 32) * 0.5 * pnSide(pn),
                         transform_pos_y = _screen.cy,
                     }
                 end;

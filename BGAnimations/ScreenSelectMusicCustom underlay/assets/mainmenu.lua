@@ -1,5 +1,8 @@
 local t = Def.ActorFrame{
     OnCommand=cmd(stoptweening;diffusealpha,0;sleep,0.2;linear,0.15;diffusealpha,1);
+    CancelCommand=function(self)
+        self:stoptweening():linear(0.2):diffusealpha(0)
+    end,
 }
 
 local originY = SCREEN_TOP+52;

@@ -15,6 +15,9 @@ local translit_artist;
 
 local t = Def.ActorFrame{
 	OnCommand=cmd(stoptweening;diffusealpha,0;sleep,0.5;linear,0.2;diffusealpha,1;playcommand,"MusicWheel");
+	CancelCommand=function(self)
+        self:stoptweening():linear(0.2):diffusealpha(0)
+    end,
 	MusicWheelMessageCommand=function(self)
 
 		--time

@@ -9,6 +9,9 @@ local paneLabels = {"Taps","Jumps","Holds","Hands","Mines","Other"};
 
 local t = Def.ActorFrame{
     OnCommand=cmd(stoptweening;diffusealpha,0;sleep,0.5;linear,0.2;diffusealpha,1);
+    CancelCommand=function(self)
+        self:stoptweening():linear(0.2):diffusealpha(0)
+    end,
     MusicWheelMessageCommand=function(self,param) if param and param.Direction then voffset = 0; end; end;
     StateChangedMessageCommand=function(self)
         self:stoptweening();
@@ -488,7 +491,6 @@ for pn in ivalues(GAMESTATE:GetHumanPlayers()) do
                         --self:GetChild("Score"):settext( FormatPercentScore(scoredata[1].score) )
                     end,
                     OnFail = function ()
-                        lua.ReportScriptError"woah af alil"
                     end
                 }
             end
