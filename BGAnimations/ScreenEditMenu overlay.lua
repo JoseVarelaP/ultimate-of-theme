@@ -1,3 +1,5 @@
+return Def.ActorFrame{}
+--[[
 local steps_item_space= _screen.h*.05
 local steps_item_width= steps_item_space * .75
 local steps_type_item_space= _screen.h*.06
@@ -201,3 +203,4 @@ local frame= Def.ActorFrame{
 }
 
 return frame
+]]
