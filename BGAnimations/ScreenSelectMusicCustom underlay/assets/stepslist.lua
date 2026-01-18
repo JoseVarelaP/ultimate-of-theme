@@ -119,15 +119,27 @@ t[#t+1] = LoadActor(THEME:GetPathG("","dim"))..{
 };
 
 t[#t+1] = LoadActor(THEME:GetPathG("","stepspane"))..{
-    InitCommand=cmd(animate,false;setstate,1+3;y,originY;x,originX;zoomto,(spacing*numcharts),0.425*self:GetHeight();diffusebottomedge,1,1,1,1);
+    InitCommand=function(self)
+        self:animate(false):setstate(1+3)
+        :xy(originX,originY):zoomto((spacing*numcharts),0.425*self:GetHeight())
+        :diffusebottomedge(1,1,1,1)
+    end,
     StateChangedMessageCommand=function(self) self:stoptweening(); self:linear(0.2); if Global.state ~= "SelectSteps" then self:diffusebottomedge(1,1,1,1); else self:diffusebottomedge(0.5,0.5,0.5,1); end; end;
 };
 t[#t+1] = LoadActor(THEME:GetPathG("","stepspane"))..{
-    InitCommand=cmd(animate,false;setstate,0+3;horizalign,right;y,originY;x,originX-((spacing*numcharts)/2);zoom,0.425;diffusebottomedge,1,1,1,1);
+    InitCommand=function(self)
+        self:animate(false):setstate(0+3)
+        :horizalign("right"):xy( originX-((spacing*numcharts)/2), originY )
+        :zoom(0.425):diffusebottomedge(1,1,1,1)
+    end,
     StateChangedMessageCommand=function(self) self:stoptweening(); self:linear(0.2); if Global.state ~= "SelectSteps" then self:diffusebottomedge(1,1,1,1);  else self:diffusebottomedge(0.5,0.5,0.5,1); end; end;
 };
 t[#t+1] = LoadActor(THEME:GetPathG("","stepspane"))..{
-    InitCommand=cmd(animate,false;setstate,2+3;horizalign,left;y,originY;x,originX+((spacing*numcharts)/2);zoom,0.425;diffusebottomedge,1,1,1,1);
+    InitCommand=function(self)
+        self:animate(false):setstate(2+3)
+        :horizalign("left"):xy( originX+((spacing*numcharts)/2), originY )
+        :zoom(0.425):diffusebottomedge(1,1,1,1)
+    end,
     StateChangedMessageCommand=function(self) self:stoptweening(); self:linear(0.2); if Global.state ~= "SelectSteps" then self:diffusebottomedge(1,1,1,1);  else self:diffusebottomedge(0.5,0.5,0.5,1); end; end;
 };
 
@@ -274,7 +286,10 @@ local hs_p = Def.ActorFrame{
     end;
 
     LoadActor(THEME:GetPathG("","litepane"))..{
-        InitCommand=cmd(zoomto,score_width,score_height*self:GetHeight();animate,false;setstate,1)
+        InitCommand=function(self)
+            self:zoomto(score_width,score_height*self:GetHeight())
+            :animate(false):setstate(1)
+        end
     },
     LoadActor(THEME:GetPathG("","litepane"))..{
         InitCommand=cmd(zoom,score_height;x,-score_width/2;horizalign,right;animate,false;setstate,0);
@@ -301,7 +316,9 @@ local hs_m = Def.ActorFrame{
     InitCommand=cmd(x,_screen.cx + 12;y,score_pos+22);
 
     LoadActor(THEME:GetPathG("","litepane"))..{
-        InitCommand=cmd(zoomto,score_width,score_height*self:GetHeight();animate,false;setstate,1)
+        InitCommand=function(self)
+            self:zoomto(score_width,score_height*self:GetHeight()):animate(false):setstate(1)
+        end
     },
     LoadActor(THEME:GetPathG("","litepane"))..{
         InitCommand=cmd(zoom,score_height;x,-score_width/2;horizalign,right;animate,false;setstate,0);
@@ -326,7 +343,9 @@ local hs_o = Def.ActorFrame{
     InitCommand=cmd(x,_screen.cx + 12;y,score_pos+22);
 
     LoadActor(THEME:GetPathG("","litepane"))..{
-        InitCommand=cmd(zoomto,score_width,score_height*self:GetHeight();animate,false;setstate,1)
+        InitCommand=function(self)
+            self:zoomto(score_width,score_height*self:GetHeight()):animate(false):setstate(1)
+        end
     },
     LoadActor(THEME:GetPathG("","litepane"))..{
         InitCommand=cmd(zoom,score_height;x,-score_width/2;horizalign,right;animate,false;setstate,0);
